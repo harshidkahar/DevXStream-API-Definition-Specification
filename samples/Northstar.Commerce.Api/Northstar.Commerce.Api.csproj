@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="DevXStream.DADS.Serialization" Version="1.0.0" />
+    <PackageReference Include="DevXStream.DADS.Validation" Version="1.0.0" />
+    <PackageReference Include="DevXStream.DADS.OpenApi" Version="1.0.0" />
+    <None Include="..\ecommerce.dads.json" Link="Definitions\ecommerce.dads.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
