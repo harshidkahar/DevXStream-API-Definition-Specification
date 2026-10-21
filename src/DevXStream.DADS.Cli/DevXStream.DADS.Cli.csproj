@@ -1,6 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><OutputType>Exe</OutputType><IsPackable>false</IsPackable></PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PackageId>DevXStream.DADS.Cli</PackageId>
+    <Version>1.0.1</Version>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>dads</ToolCommandName>
+  </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../DevXStream.DADS.AspNetCore/DevXStream.DADS.AspNetCore.csproj" />
     <ProjectReference Include="../DevXStream.DADS.Validation/DevXStream.DADS.Validation.csproj" />
     <ProjectReference Include="../DevXStream.DADS.Serialization/DevXStream.DADS.Serialization.csproj" />
     <ProjectReference Include="../DevXStream.DADS.OpenApi/DevXStream.DADS.OpenApi.csproj" />

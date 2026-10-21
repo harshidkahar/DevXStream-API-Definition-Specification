@@ -1,18 +1,19 @@
 using System.Text.Json;
 using DevXStream.DADS.Docs;
+using DevXStream.DADS.AspNetCore;
 using DevXStream.DADS.OpenApi;
 using DevXStream.DADS.Serialization;
 using DevXStream.DADS.Validation;
 
 if (args.Length < 2)
 {
-    Console.Error.WriteLine("Usage: dads <validate|export-openapi|build-docs-data> <definition> [--output <file>]");
+    Console.Error.WriteLine("Usage: dads <validate|export-openapi|build-docs-data|generate-aspnet> <definition> [--output <file>]");
     return 2;
 }
 
 var command = args[0].ToLowerInvariant();
 var inputPath = args[1];
-if (command is not ("validate" or "export-openapi" or "build-docs-data"))
+if (command is not ("validate" or "export-openapi" or "build-docs-data" or "generate-aspnet"))
 {
     Console.Error.WriteLine($"Unknown command: {command}");
     return 2;
@@ -30,6 +31,12 @@ if (command == "validate") { Console.WriteLine("DADS validation passed."); retur
 if (args.Length != 4 || args[2] != "--output") { Console.Error.WriteLine("Export commands require --output <file>."); return 2; }
 
 var definition = await DadsDefinitionLoader.LoadAsync(inputPath);
+if (command == "generate-aspnet")
+{
+    await File.WriteAllTextAsync(args[3], DadsAspNetCodeGenerator.Generate(definition));
+    Console.WriteLine($"Wrote generated ASP.NET Core endpoints to {args[3]}.");
+    return 0;
+}
 object export = command switch
 {
     "export-openapi" => OpenApiExporter.Export(definition),

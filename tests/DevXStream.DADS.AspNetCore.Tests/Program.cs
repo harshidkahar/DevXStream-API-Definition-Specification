@@ -20,6 +20,13 @@ var facadeWorkflowPasses = DadsDefinitionDocument.LoadValidated("""{ "definition
 Console.WriteLine($"{(facadeWorkflowPasses ? "PASS" : "FAIL")} exposes DADS workflow through ASP.NET Core package");
 if (!facadeWorkflowPasses) return 1;
 
+var generatedSource = DadsAspNetCodeGenerator.Generate(definition);
+var generationPasses = generatedSource.Contains("public interface IGetProductHandler", StringComparison.Ordinal)
+    && generatedSource.Contains("MapGeneratedDadsEndpoints", StringComparison.Ordinal)
+    && generatedSource.Contains("/products/{id}", StringComparison.Ordinal);
+Console.WriteLine($"{(generationPasses ? "PASS" : "FAIL")} generates ASP.NET Core endpoint contracts");
+if (!generationPasses) return 1;
+
 var builder = WebApplication.CreateBuilder();
 var app = builder.Build();
 var invoked = false;

@@ -69,6 +69,26 @@ public sealed class GetProductQueryHandler : IDadsOperationHandler
 
 The convention matches `GetProductQueryHandler` to `"handler": "GetProductQueryHandler"`. Use `[DadsOperationHandler("OtherHandlerName")]` only when a class name cannot match the DADS metadata.
 
+## Generate ASP.NET Core endpoints
+
+For a DADS-first API, generate the endpoint contracts from the definition instead of maintaining route mappings by hand:
+
+```powershell
+dotnet tool install --global DevXStream.DADS.Cli --version 1.0.1
+dads generate-aspnet Definitions/api.dads.json --output Generated/DadsEndpoints.g.cs
+```
+
+Include the generated `.g.cs` file in the API project. It contains `MapGeneratedDadsEndpoints()` and one handler interface per DADS operation, named from `engineering.handler`. Register all implementations from one assembly and map every generated route in one call:
+
+```csharp
+builder.Services.AddDadsGeneratedOperationHandlersFromAssemblyOf<GetProductQueryHandler>();
+
+var app = builder.Build();
+app.MapGeneratedDadsEndpoints();
+```
+
+Regenerate the file whenever the definition changes; no per-operation route map needs to be maintained in application startup.
+
 ## Build the branded portal
 
 ```powershell

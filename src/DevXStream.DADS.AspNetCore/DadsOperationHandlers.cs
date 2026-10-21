@@ -24,6 +24,25 @@ public sealed class DadsOperationHandlerAttribute(string handlerName) : Attribut
 /// <summary>Registers DADS operation handler classes by scanning an application assembly.</summary>
 public static class DadsOperationHandlerServiceCollectionExtensions
 {
+    /// <summary>Registers generated DADS handler implementations from the assembly containing <typeparamref name="TMarker"/>.</summary>
+    public static IServiceCollection AddDadsGeneratedOperationHandlersFromAssemblyOf<TMarker>(this IServiceCollection services) =>
+        services.AddDadsGeneratedOperationHandlersFromAssembly(typeof(TMarker).Assembly);
+
+    /// <summary>Registers generated DADS handler implementations from an assembly.</summary>
+    public static IServiceCollection AddDadsGeneratedOperationHandlersFromAssembly(this IServiceCollection services, Assembly assembly)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(assembly);
+
+        foreach (var type in assembly.DefinedTypes.Where(type => type is { IsAbstract: false, IsInterface: false } && typeof(IDadsGeneratedOperationHandler).IsAssignableFrom(type)))
+        {
+            foreach (var contract in type.ImplementedInterfaces.Where(contract => contract != typeof(IDadsGeneratedOperationHandler) && typeof(IDadsGeneratedOperationHandler).IsAssignableFrom(contract)))
+                services.AddTransient(contract, type.AsType());
+        }
+
+        return services;
+    }
+
     /// <summary>Discovers handlers in the assembly containing <typeparamref name="TMarker"/>.</summary>
     public static IServiceCollection AddDadsOperationHandlersFromAssemblyOf<TMarker>(this IServiceCollection services) =>
         services.AddDadsOperationHandlersFromAssembly(typeof(TMarker).Assembly);
