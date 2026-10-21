@@ -66,6 +66,33 @@ public static class DadsEndpointRouteBuilderExtensions
     public static IEndpointRouteBuilder MapDadsEndpoints(this IEndpointRouteBuilder endpoints, Action<DadsEndpointHandlers> configure) =>
         endpoints.MapDadsEndpoints(endpoints.ServiceProvider.GetRequiredService<DadsDefinition>(), configure);
 
+    /// <summary>
+    /// Maps all operations using discovered <see cref="IDadsOperationHandler"/> classes.
+    /// Handler classes are matched to each operation's <c>engineering.handler</c> value,
+    /// or its operation name when engineering metadata does not specify a handler.
+    /// </summary>
+    public static IEndpointRouteBuilder MapDadsEndpoints(this IEndpointRouteBuilder endpoints)
+    {
+        ArgumentNullException.ThrowIfNull(endpoints);
+        var registrations = endpoints.ServiceProvider.GetServices<DadsHandlerRegistration>().ToArray();
+        var duplicateNames = registrations.GroupBy(registration => registration.HandlerName, StringComparer.Ordinal)
+            .Where(group => group.Count() > 1).Select(group => group.Key).ToArray();
+        if (duplicateNames.Length > 0)
+            throw new InvalidOperationException($"Multiple DADS handlers were registered with the same name: {string.Join(", ", duplicateNames)}.");
+
+        var handlersByName = registrations.ToDictionary(registration => registration.HandlerName, StringComparer.Ordinal);
+        return endpoints.MapDadsEndpoints(endpoints.ServiceProvider.GetRequiredService<DadsDefinition>(), operation =>
+        {
+            var handlerName = operation.Operation.Engineering?.Handler ?? operation.Operation.Name;
+            if (!handlersByName.TryGetValue(handlerName, out var registration))
+                return null;
+
+            return (httpContext, dadsOperation) =>
+                ((IDadsOperationHandler)httpContext.RequestServices.GetRequiredService(registration.HandlerType))
+                    .HandleAsync(httpContext, dadsOperation);
+        });
+    }
+
     /// <summary>Exposes the registered DADS definition as an OpenAPI 3.1.1 document.</summary>
     public static IEndpointConventionBuilder MapDadsOpenApi(this IEndpointRouteBuilder endpoints, string pattern = "/openapi.json")
     {

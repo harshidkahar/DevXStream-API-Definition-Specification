@@ -50,6 +50,25 @@ app.MapDadsOpenApi(); // serves /openapi.json for Scalar, Swagger UI, or any Ope
 
 Every declared operation must have exactly one handler. Each mapped endpoint preserves its DADS operation name and adds `DadsOperationMetadata` to ASP.NET Core endpoint metadata, making it available to conventions, filters, and documentation tooling. Use the existing resolver overload only when a handler needs access to the complete `DadsOperationContext`.
 
+For applications with many operations, declare the handler class name in each operation's `engineering.handler` field and let the package discover handlers automatically:
+
+```csharp
+builder.Services
+    .AddDadsDefinition(Path.Combine(builder.Environment.ContentRootPath, "Definitions", "api.dads.json"))
+    .AddDadsOperationHandlersFromAssemblyOf<GetProductQueryHandler>();
+
+var app = builder.Build();
+app.MapDadsEndpoints();
+
+public sealed class GetProductQueryHandler : IDadsOperationHandler
+{
+    public async Task<IResult> HandleAsync(HttpContext context, DadsOperationContext operation) =>
+        Results.Ok(await catalog.GetAsync(context.Request.RouteValues["id"]));
+}
+```
+
+The convention matches `GetProductQueryHandler` to `"handler": "GetProductQueryHandler"`. Use `[DadsOperationHandler("OtherHandlerName")]` only when a class name cannot match the DADS metadata.
+
 ## Build the branded portal
 
 ```powershell

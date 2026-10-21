@@ -67,6 +67,29 @@ var conveniencePasses = convenienceEndpoints.Length == 2
     && convenienceEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/openapi.json");
 
 Console.WriteLine($"{(conveniencePasses ? "PASS" : "FAIL")} maps fluent handlers and OpenAPI endpoint");
-return missingHandlerThrows && !invoked && conveniencePasses ? 0 : 1;
+
+var automaticDefinition = new DadsDefinition(
+    "DADS 1.0",
+    new ApplicationDefinition("Test", "1.0", null, null, null),
+    [],
+    [new ModuleDefinition("Catalog", null, [
+        new OperationDefinition("getProduct", "GET", "/products/{id}", "Get product", null, null, null, null, [new ResponseDefinition("200", "OK", null, null, null)], new EngineeringMetadata(null, "AutoGetProductHandler", null, null, null, null, null))
+    ])],
+    []);
+var automaticBuilder = WebApplication.CreateBuilder();
+automaticBuilder.Services.AddSingleton(automaticDefinition);
+automaticBuilder.Services.AddDadsOperationHandlersFromAssemblyOf<AutoGetProductHandler>();
+var automaticApp = automaticBuilder.Build();
+automaticApp.MapDadsEndpoints();
+var automaticPasses = ((IEndpointRouteBuilder)automaticApp).DataSources.SelectMany(source => source.Endpoints)
+    .Any(endpoint => endpoint.Metadata.GetMetadata<IEndpointNameMetadata>()?.EndpointName == "getProduct");
+
+Console.WriteLine($"{(automaticPasses ? "PASS" : "FAIL")} discovers handlers from engineering metadata");
+return missingHandlerThrows && !invoked && conveniencePasses && automaticPasses ? 0 : 1;
 
 static IResult GetProduct(string id) => Results.Ok(id);
+
+public sealed class AutoGetProductHandler : IDadsOperationHandler
+{
+    public Task<IResult> HandleAsync(HttpContext httpContext, DadsOperationContext operation) => Task.FromResult<IResult>(Results.Ok());
+}
