@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><PackageId>DevXStream.DADS.Serialization</PackageId></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../DevXStream.DADS.Models/DevXStream.DADS.Models.csproj" />
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
+  </ItemGroup>
+</Project>

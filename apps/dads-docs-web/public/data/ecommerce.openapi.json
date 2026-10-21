@@ -1,0 +1,277 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Northstar Commerce API",
+    "version": "1.0.0",
+    "description": "A reference DADS application showing a DevXStream-branded API documentation experience."
+  },
+  "servers": [
+    {
+      "url": "https://api.northstar.example/v1",
+      "description": "Production"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Catalog",
+      "description": "Public product discovery and product details."
+    },
+    {
+      "name": "Orders",
+      "description": "Authenticated customer checkout operations."
+    }
+  ],
+  "paths": {
+    "/products": {
+      "get": {
+        "operationId": "ListProducts",
+        "tags": [
+          "Catalog"
+        ],
+        "summary": "List products",
+        "description": "Returns a paginated product collection. Results can be filtered by category.",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "description": "Limits results to a catalogue category.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "lighting"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "One-based page number.",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                },
+                "example": {
+                  "items": [
+                    {
+                      "id": "prd_100",
+                      "name": "Arc Lamp",
+                      "price": 129.99
+                    }
+                  ],
+                  "page": 1,
+                  "total": 1
+                }
+              }
+            }
+          }
+        },
+        "x-devxstream-engineering": {
+          "Cqrs": "Query",
+          "Handler": "ListProductsQueryHandler",
+          "Authorization": "Anonymous",
+          "Cache": "60 seconds",
+          "Transaction": null,
+          "Persistence": null,
+          "Validation": null
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "operationId": "GetProduct",
+        "tags": [
+          "Catalog"
+        ],
+        "summary": "Get product",
+        "description": "Returns a single product by its stable identifier.",
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Stable product identifier.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "prd_100"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                },
+                "example": {
+                  "id": "prd_100",
+                  "name": "Arc Lamp",
+                  "price": 129.99
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product was not found",
+            "content": null
+          }
+        },
+        "x-devxstream-engineering": {
+          "Cqrs": "Query",
+          "Handler": "GetProductQueryHandler",
+          "Authorization": "Anonymous",
+          "Cache": null,
+          "Transaction": null,
+          "Persistence": null,
+          "Validation": null
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "operationId": "CreateOrder",
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Create order",
+        "description": "Creates an order for the authenticated customer.",
+        "deprecated": false,
+        "requestBody": {
+          "description": "Products and shipping address selected by the customer.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderRequest"
+              },
+              "example": {
+                "items": [
+                  {
+                    "productId": "prd_100",
+                    "quantity": 1
+                  }
+                ],
+                "shippingAddressId": "adr_200"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "example": {
+                  "id": "ord_300",
+                  "status": "Pending"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validation failed",
+            "content": null
+          }
+        },
+        "x-devxstream-engineering": {
+          "Cqrs": "Command",
+          "Handler": "CreateOrderCommandHandler",
+          "Authorization": "Customer",
+          "Cache": null,
+          "Transaction": "Required",
+          "Persistence": null,
+          "Validation": null
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateOrderRequest": {
+        "type": "object",
+        "description": "The request payload used to create an order.",
+        "properties": {
+          "items": {
+            "type": "array",
+            "format": null,
+            "description": "Products and quantities to order.",
+            "nullable": null,
+            "items": {
+              "type": "object",
+              "format": null,
+              "description": null,
+              "nullable": null
+            }
+          },
+          "shippingAddressId": {
+            "type": "string",
+            "format": "identifier",
+            "description": "Saved customer shipping address.",
+            "nullable": null
+          }
+        },
+        "required": [
+          "items",
+          "shippingAddressId"
+        ],
+        "example": {
+          "items": [
+            {
+              "productId": "prd_100",
+              "quantity": 1
+            }
+          ],
+          "shippingAddressId": "adr_200"
+        }
+      },
+      "Product": {
+        "type": "object",
+        "description": "A catalogue product exposed to API consumers.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": null,
+            "description": "Stable product identifier.",
+            "nullable": null
+          },
+          "name": {
+            "type": "string",
+            "format": null,
+            "description": "Public product name.",
+            "nullable": null
+          },
+          "price": {
+            "type": "number",
+            "format": null,
+            "description": "Current unit price.",
+            "nullable": null
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "price"
+        ],
+        "example": {
+          "id": "prd_100",
+          "name": "Arc Lamp",
+          "price": 129.99
+        }
+      }
+    }
+  }
+}

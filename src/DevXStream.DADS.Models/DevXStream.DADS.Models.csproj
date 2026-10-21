@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>DevXStream.DADS.Models</PackageId>
+  </PropertyGroup>
+</Project>

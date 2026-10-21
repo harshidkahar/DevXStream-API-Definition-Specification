@@ -1,0 +1,8 @@
+{
+  "enabled": false,
+  "allowStateChanging": false,
+  "environments": [
+    { "id": "preview", "label": "Preview sandbox", "url": "https://api.example.invalid/v1" }
+  ],
+  "allowedOperations": ["catalog-listproducts", "catalog-getproduct"]
+}

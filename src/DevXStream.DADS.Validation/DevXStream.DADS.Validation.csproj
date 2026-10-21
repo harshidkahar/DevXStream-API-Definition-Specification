@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><PackageId>DevXStream.DADS.Validation</PackageId></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../DevXStream.DADS.Models/DevXStream.DADS.Models.csproj" />
+    <ProjectReference Include="../DevXStream.DADS.Serialization/DevXStream.DADS.Serialization.csproj" />
+  </ItemGroup>
+</Project>

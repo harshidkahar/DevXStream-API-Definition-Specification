@@ -1,0 +1,297 @@
+{
+  "application": {
+    "name": "Northstar Commerce API",
+    "version": "1.0.0",
+    "description": "A reference DADS application showing a DevXStream-branded API documentation experience.",
+    "framework": "net10.0",
+    "architecture": "Clean Architecture",
+    "servers": [
+      {
+        "url": "https://api.northstar.example/v1",
+        "description": "Production"
+      }
+    ]
+  },
+  "navigation": [
+    {
+      "name": "Catalog",
+      "description": "Public product discovery and product details.",
+      "order": null,
+      "operations": [
+        {
+          "id": "catalog-listproducts",
+          "name": "ListProducts",
+          "method": "GET",
+          "route": "/products",
+          "summary": "List products",
+          "description": "Returns a paginated product collection. Results can be filtered by category.",
+          "deprecated": false,
+          "parameters": [
+            {
+              "name": "category",
+              "in": "query",
+              "type": "string",
+              "required": false,
+              "description": "Limits results to a catalogue category.",
+              "example": "lighting"
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "type": "integer",
+              "required": false,
+              "description": "One-based page number.",
+              "example": 1
+            }
+          ],
+          "request": null,
+          "responses": [
+            {
+              "statusCode": "200",
+              "description": "Product page",
+              "schema": "Product",
+              "contentType": null,
+              "example": {
+                "items": [
+                  {
+                    "id": "prd_100",
+                    "name": "Arc Lamp",
+                    "price": 129.99
+                  }
+                ],
+                "page": 1,
+                "total": 1
+              }
+            }
+          ],
+          "engineering": {
+            "cqrs": "Query",
+            "handler": "ListProductsQueryHandler",
+            "authorization": "Anonymous",
+            "cache": "60 seconds",
+            "transaction": null,
+            "persistence": null,
+            "validation": null
+          },
+          "requestSnippets": {
+            "curl": "curl -X GET \u0027https://api.northstar.example/v1/products\u0027",
+            "http": "GET https://api.northstar.example/v1/products HTTP/1.1\nAccept: application/json",
+            "csharp": "using var client = new HttpClient();\nusing var request = new HttpRequestMessage(HttpMethod.Get, \u0022https://api.northstar.example/v1/products\u0022);\nusing var response = await client.SendAsync(request);",
+            "javascript": "const response = await fetch(\u0022https://api.northstar.example/v1/products\u0022, { method: \u0022GET\u0022 });",
+            "python": "response = requests.request(\u0022GET\u0022, \u0022https://api.northstar.example/v1/products\u0022)"
+          }
+        },
+        {
+          "id": "catalog-getproduct",
+          "name": "GetProduct",
+          "method": "GET",
+          "route": "/products/{id}",
+          "summary": "Get product",
+          "description": "Returns a single product by its stable identifier.",
+          "deprecated": false,
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "type": "uuid",
+              "required": true,
+              "description": "Stable product identifier.",
+              "example": "prd_100"
+            }
+          ],
+          "request": null,
+          "responses": [
+            {
+              "statusCode": "200",
+              "description": "Product",
+              "schema": "Product",
+              "contentType": null,
+              "example": {
+                "id": "prd_100",
+                "name": "Arc Lamp",
+                "price": 129.99
+              }
+            },
+            {
+              "statusCode": "404",
+              "description": "Product was not found",
+              "schema": null,
+              "contentType": null,
+              "example": null
+            }
+          ],
+          "engineering": {
+            "cqrs": "Query",
+            "handler": "GetProductQueryHandler",
+            "authorization": "Anonymous",
+            "cache": null,
+            "transaction": null,
+            "persistence": null,
+            "validation": null
+          },
+          "requestSnippets": {
+            "curl": "curl -X GET \u0027https://api.northstar.example/v1/products/{id}\u0027",
+            "http": "GET https://api.northstar.example/v1/products/{id} HTTP/1.1\nAccept: application/json",
+            "csharp": "using var client = new HttpClient();\nusing var request = new HttpRequestMessage(HttpMethod.Get, \u0022https://api.northstar.example/v1/products/{id}\u0022);\nusing var response = await client.SendAsync(request);",
+            "javascript": "const response = await fetch(\u0022https://api.northstar.example/v1/products/{id}\u0022, { method: \u0022GET\u0022 });",
+            "python": "response = requests.request(\u0022GET\u0022, \u0022https://api.northstar.example/v1/products/{id}\u0022)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "description": "Authenticated customer checkout operations.",
+      "order": null,
+      "operations": [
+        {
+          "id": "orders-createorder",
+          "name": "CreateOrder",
+          "method": "POST",
+          "route": "/orders",
+          "summary": "Create order",
+          "description": "Creates an order for the authenticated customer.",
+          "deprecated": false,
+          "parameters": [],
+          "request": {
+            "schema": "CreateOrderRequest",
+            "description": "Products and shipping address selected by the customer.",
+            "contentType": "application/json",
+            "example": {
+              "items": [
+                {
+                  "productId": "prd_100",
+                  "quantity": 1
+                }
+              ],
+              "shippingAddressId": "adr_200"
+            }
+          },
+          "responses": [
+            {
+              "statusCode": "201",
+              "description": "Order created",
+              "schema": null,
+              "contentType": null,
+              "example": {
+                "id": "ord_300",
+                "status": "Pending"
+              }
+            },
+            {
+              "statusCode": "400",
+              "description": "Request validation failed",
+              "schema": null,
+              "contentType": null,
+              "example": null
+            }
+          ],
+          "engineering": {
+            "cqrs": "Command",
+            "handler": "CreateOrderCommandHandler",
+            "authorization": "Customer",
+            "cache": null,
+            "transaction": "Required",
+            "persistence": null,
+            "validation": null
+          },
+          "requestSnippets": {
+            "curl": "curl -X POST \u0027https://api.northstar.example/v1/orders\u0027 -H \u0027Content-Type: application/json\u0027 --data \u0027{ \u0022items\u0022: [{ \u0022productId\u0022: \u0022prd_100\u0022, \u0022quantity\u0022: 1 }], \u0022shippingAddressId\u0022: \u0022adr_200\u0022 }\u0027",
+            "http": "POST https://api.northstar.example/v1/orders HTTP/1.1\nAccept: application/json\nContent-Type: application/json\n\n{ \u0022items\u0022: [{ \u0022productId\u0022: \u0022prd_100\u0022, \u0022quantity\u0022: 1 }], \u0022shippingAddressId\u0022: \u0022adr_200\u0022 }",
+            "csharp": "using var client = new HttpClient();\nusing var request = new HttpRequestMessage(HttpMethod.Post, \u0022https://api.northstar.example/v1/orders\u0022);\nrequest.Content = JsonContent.Create({ \u0022items\u0022: [{ \u0022productId\u0022: \u0022prd_100\u0022, \u0022quantity\u0022: 1 }], \u0022shippingAddressId\u0022: \u0022adr_200\u0022 });\nusing var response = await client.SendAsync(request);",
+            "javascript": "const response = await fetch(\u0022https://api.northstar.example/v1/orders\u0022, { method: \u0022POST\u0022, headers: { \u0022Content-Type\u0022: \u0022application/json\u0022 }, body: JSON.stringify({ \u0022items\u0022: [{ \u0022productId\u0022: \u0022prd_100\u0022, \u0022quantity\u0022: 1 }], \u0022shippingAddressId\u0022: \u0022adr_200\u0022 }) });",
+            "python": "response = requests.request(\u0022POST\u0022, \u0022https://api.northstar.example/v1/orders\u0022, json={ \u0022items\u0022: [{ \u0022productId\u0022: \u0022prd_100\u0022, \u0022quantity\u0022: 1 }], \u0022shippingAddressId\u0022: \u0022adr_200\u0022 })"
+          }
+        }
+      ]
+    }
+  ],
+  "schemas": [
+    {
+      "name": "CreateOrderRequest",
+      "description": "The request payload used to create an order.",
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "format": null,
+          "description": "Products and quantities to order.",
+          "nullable": null,
+          "example": null,
+          "items": {
+            "type": "object",
+            "format": null,
+            "description": null,
+            "nullable": null,
+            "example": null,
+            "items": null
+          }
+        },
+        "shippingAddressId": {
+          "type": "string",
+          "format": "identifier",
+          "description": "Saved customer shipping address.",
+          "nullable": null,
+          "example": null,
+          "items": null
+        }
+      },
+      "required": [
+        "items",
+        "shippingAddressId"
+      ],
+      "enum": null,
+      "example": {
+        "items": [
+          {
+            "productId": "prd_100",
+            "quantity": 1
+          }
+        ],
+        "shippingAddressId": "adr_200"
+      }
+    },
+    {
+      "name": "Product",
+      "description": "A catalogue product exposed to API consumers.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": null,
+          "description": "Stable product identifier.",
+          "nullable": null,
+          "example": null,
+          "items": null
+        },
+        "name": {
+          "type": "string",
+          "format": null,
+          "description": "Public product name.",
+          "nullable": null,
+          "example": null,
+          "items": null
+        },
+        "price": {
+          "type": "number",
+          "format": null,
+          "description": "Current unit price.",
+          "nullable": null,
+          "example": null,
+          "items": null
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "price"
+      ],
+      "enum": null,
+      "example": {
+        "id": "prd_100",
+        "name": "Arc Lamp",
+        "price": 129.99
+      }
+    }
+  ]
+}

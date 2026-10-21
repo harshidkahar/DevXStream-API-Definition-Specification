@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><IsPackable>false</IsPackable></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../DevXStream.DADS.Validation/DevXStream.DADS.Validation.csproj" />
+    <ProjectReference Include="../DevXStream.DADS.Serialization/DevXStream.DADS.Serialization.csproj" />
+    <ProjectReference Include="../DevXStream.DADS.OpenApi/DevXStream.DADS.OpenApi.csproj" />
+    <ProjectReference Include="../DevXStream.DADS.Docs/DevXStream.DADS.Docs.csproj" />
+  </ItemGroup>
+</Project>

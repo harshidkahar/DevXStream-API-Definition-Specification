@@ -1,0 +1,25 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Authors>DevXStream</Authors>
+    <RepositoryUrl>https://github.com/harshidkahar/DevXStream-API-Definition-Specification</RepositoryUrl>
+    <PackageTags>DADS;API;OpenAPI;documentation</PackageTags>
+    <Version>1.0.0</Version>
+    <PackageReleaseNotes>See CHANGELOG.md for DADS v1.0 release notes.</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/harshidkahar/DevXStream-API-Definition-Specification</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

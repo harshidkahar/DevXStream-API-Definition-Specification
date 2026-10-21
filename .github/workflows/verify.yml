@@ -1,0 +1,36 @@
+name: Verify DADS
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: npm
+          cache-dependency-path: apps/dads-docs-web/package-lock.json
+      - run: dotnet build DevXStream.DADS.slnx --nologo
+      - run: dotnet run --project tests/DevXStream.DADS.Validation.Tests --no-build
+      - run: dotnet run --project src/DevXStream.DADS.Cli --no-build -- validate samples/ecommerce.dads.json
+      - run: npm ci --prefix apps/dads-docs-web
+      - run: npm run build:dads --prefix apps/dads-docs-web
+      - run: npm run verify:preview --prefix apps/dads-docs-web
+      - run: npm run verify:a11y --prefix apps/dads-docs-web
+      - run: npm audit --omit=dev --prefix apps/dads-docs-web
+      - run: dotnet list DevXStream.DADS.slnx package --vulnerable --include-transitive
+      - run: dotnet pack src/DevXStream.DADS.Models -c Release --output artifacts/packages
+      - run: dotnet pack src/DevXStream.DADS.Serialization -c Release --output artifacts/packages
+      - run: dotnet pack src/DevXStream.DADS.Validation -c Release --output artifacts/packages
+      - run: dotnet pack src/DevXStream.DADS.OpenApi -c Release --output artifacts/packages
+      - run: dotnet pack src/DevXStream.DADS.Docs -c Release --output artifacts/packages
+      - shell: pwsh
+        run: ./scripts/verify-release.ps1

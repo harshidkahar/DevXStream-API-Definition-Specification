@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="DevXStream API Definition Specification documentation." />
+    <title>DevXStream DADS Docs</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./branding.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar" aria-label="API navigation">
+        <a class="brand" href="#introduction" aria-label="DevXStream DADS documentation home">
+          <img src="./assets/devxstream-logo.png" alt="DevXStream — Streamline Development. Accelerate Innovation." />
+        </a>
+        <label class="search"><span>Search</span><input id="search" type="search" placeholder="Find endpoints or models" /></label>
+        <nav id="navigation" aria-label="Documentation sections"></nav>
+        <footer>Built from <strong>DADS v1</strong></footer>
+      </aside>
+
+      <main id="content" tabindex="-1">
+        <header class="topbar">
+          <div><span class="eyebrow">API REFERENCE</span><h1 id="api-title">Loading…</h1></div>
+          <div class="topbar-actions">
+            <button id="theme-toggle" type="button" aria-label="Toggle colour theme">◐</button>
+            <a id="download-definition" class="button button-secondary" download>Download DADS</a>
+            <button id="download-openapi" class="button" type="button">Download OpenAPI</button>
+          </div>
+        </header>
+        <section id="document-content" aria-live="polite"></section>
+      </main>
+    </div>
+    <template id="operation-template">
+      <article class="operation">
+        <div class="operation-heading"><span class="method"></span><code class="route"></code></div>
+        <h2></h2><p class="description"></p>
+        <section class="details"></section>
+        <section class="request-example"><div class="section-title">Request example</div><pre><code></code></pre><button class="copy" type="button">Copy</button></section>
+        <section class="responses"><div class="section-title">Responses</div></section>
+        <details class="engineering"><summary>DevXStream engineering details</summary><dl></dl></details>
+      </article>
+    </template>
+    <script src="./app.js"></script>
+  </body>
+</html>

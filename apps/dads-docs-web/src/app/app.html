@@ -1,0 +1,92 @@
+<div class="app-shell" [class.dark]="dark()" [style.--brand]="branding().primary" [style.--brand-dark]="branding().primaryDark">
+  <aside class="sidebar" aria-label="API documentation navigation">
+    <a class="brand" href="#introduction" aria-label="DevXStream documentation home">
+      <img [src]="branding().logoPath" alt="DevXStream — Streamline Development. Accelerate Innovation." />
+    </a>
+    <label class="search-label" for="docs-search">Search documentation</label>
+    <div class="search-wrap"><input id="docs-search" class="search" type="search" role="combobox" aria-autocomplete="list" [attr.aria-expanded]="searchOpen()" aria-controls="search-results" placeholder="Endpoint, route, or model" [value]="query()" (input)="updateQuery($any($event.target).value)" (focus)="openSearch()" (keydown.arrowdown)="$event.preventDefault(); moveSearchResult(1)" (keydown.arrowup)="$event.preventDefault(); moveSearchResult(-1)" (keydown.enter)="$event.preventDefault(); openActiveSearchResult()" (keydown.escape)="searchOpen.set(false)" />
+      @if (searchOpen() && searchResults().length) { <div id="search-results" class="search-results" role="listbox">@for (result of searchResults(); track result.href; let index = $index) { <button type="button" role="option" [class.active]="index === activeSearchResult()" [attr.aria-selected]="index === activeSearchResult()" (mousedown)="$event.preventDefault(); chooseSearchResult(result)"><span>{{ result.kind }}</span><strong>{{ result.label }}</strong><small>{{ result.detail }}</small></button> }</div> }
+    </div>
+    <nav>
+      <p class="nav-label">Overview</p>
+      <a href="#introduction">Introduction</a>
+      @for (group of visibleGroups(); track group.name) {
+        <section class="nav-group">
+          <p class="nav-label">{{ group.name }}</p>
+          @for (operation of group.operations; track operation.id) {
+            <a [href]="'#' + operation.id"><span>{{ operation.method }}</span>{{ operation.route }}</a>
+          }
+        </section>
+      }
+      <p class="nav-label">Reference</p>
+      <a href="#models">Models</a>
+    </nav>
+    <p class="sidebar-footer">Generated from <strong>DADS v1</strong></p>
+  </aside>
+
+  <main>
+    @if (docs(); as document) {
+      <header class="topbar">
+        <div><p class="eyebrow">DEVXSTREAM API REFERENCE</p><h1>{{ branding().portalTitle || document.application.name }}</h1></div>
+        <div class="actions">
+          <button class="icon-button" type="button" (click)="toggleTheme()" [attr.aria-label]="dark() ? 'Use light theme' : 'Use dark theme'" [attr.aria-pressed]="dark()">◐</button>
+          <a class="button secondary" href="data/ecommerce.docs.json" download>Docs data</a>
+          <a class="button" href="data/ecommerce.openapi.json" download>OpenAPI 3.1</a>
+        </div>
+      </header>
+      <div class="content">
+        <section id="introduction" class="introduction">
+          <p class="eyebrow">{{ document.application.version }}</p>
+          <h2>{{ document.application.name }}</h2>
+          <p class="lead">{{ document.application.description }}</p>
+          <div class="chips"><span>{{ document.application.framework }}</span><span>{{ document.application.architecture }}</span><span>{{ document.navigation.length }} modules</span></div>
+          @if (document.application.servers[0]; as server) { <div class="server"><strong>{{ server.description || 'Server' }}</strong><code>{{ server.url }}</code></div> }
+        </section>
+
+        @for (group of visibleGroups(); track group.name) {
+          <section [id]="'module-' + group.name.toLowerCase()" class="module">
+            <p class="eyebrow">MODULE</p><h2>{{ group.name }}</h2><p class="module-description">{{ group.description }}</p>
+            @for (operation of group.operations; track operation.id) {
+              <article [id]="operation.id" class="operation">
+                <div class="operation-title"><span [class]="methodClass(operation.method)">{{ operation.method }}</span><code>{{ operation.route }}</code></div>
+                <h3>{{ operation.summary }}</h3><p class="operation-description">{{ operation.description }}</p>
+                @if (operation.deprecated) { <p class="deprecated">Deprecated</p> }
+                @if (operation.parameters.length) {
+                  <h4>Parameters</h4><div class="parameter-table">
+                    @for (parameter of operation.parameters; track parameter.name + parameter.in) {
+                      <div class="parameter-row"><div><strong>{{ parameter.name }}</strong><span class="location">{{ parameter.in }}</span></div><div><code>{{ parameter.type }}</code>{{ parameter.required ? ' · required' : '' }}<p>{{ parameter.description || 'No description provided.' }}</p>@if (parameter.example !== undefined) { <code class="example">Example: {{ stringify(parameter.example) }}</code> }</div></div>
+                    }
+                  </div>
+                }
+                @if (operation.request; as request) { <h4>Request body</h4><div class="request-contract"><p>{{ request.description || 'Request payload.' }}</p>@if (request.schema) { <a [href]="'#' + modelId(request.schema)">Schema: {{ request.schema }}</a> }<span>{{ request.contentType || 'application/json' }}</span></div>@if (request.example !== undefined) { <pre><code>{{ stringify(request.example) }}</code></pre> } }
+                <h4>Request examples</h4>
+                <div class="tabs" role="tablist" [attr.aria-label]="operation.summary + ' request examples'">@for (snippet of operation.requestSnippets | keyvalue; track snippet.key) { <button type="button" role="tab" [class.active]="snippetLanguage(operation) === snippet.key" [attr.aria-selected]="snippetLanguage(operation) === snippet.key" (click)="selectSnippet(operation.id, snippet.key)">{{ snippet.key }}</button> }</div>
+                @if (operation.requestSnippets[snippetLanguage(operation)]; as selectedSnippet) { <section class="snippet"><div><span>{{ snippetLanguage(operation) }}</span><button type="button" (click)="copy(selectedSnippet, operation.id + snippetLanguage(operation))">{{ copied() === operation.id + snippetLanguage(operation) ? 'Copied' : 'Copy' }}</button></div><pre><code>{{ selectedSnippet }}</code></pre></section> }
+                <h4>Responses</h4><div class="tabs" role="tablist" [attr.aria-label]="operation.summary + ' responses'">@for (response of operation.responses; track response.statusCode) { <button type="button" role="tab" [class.active]="response.statusCode === (selectedResponse(operation)?.statusCode)" [attr.aria-selected]="response.statusCode === (selectedResponse(operation)?.statusCode)" (click)="selectResponse(operation.id, response.statusCode)">{{ response.statusCode }}</button> }</div>
+                @if (selectedResponse(operation); as responseContract) { <section class="response"><strong>{{ responseContract.statusCode }}</strong><div><p>{{ responseContract.description }}</p>@if (responseContract.schema) { <a [href]="'#' + modelId(responseContract.schema)">Schema: {{ responseContract.schema }}</a> }@if (responseContract.contentType) { <span class="content-type">{{ responseContract.contentType }}</span> }@if (responseContract.example !== undefined) { <pre><code>{{ stringify(responseContract.example) }}</code></pre> }</div></section> }
+                <section class="try-it" [class.is-disabled]="!canExecute(operation)">
+                  <div class="try-it-heading"><div><p class="eyebrow">CONTROLLED EXECUTION</p><h4>Try this operation</h4></div><span>{{ canExecute(operation) ? 'Allow-listed' : 'Disabled' }}</span></div>
+                  @if (tryIt().environments.length) { <label [for]="operation.id + '-environment'">Environment<select [id]="operation.id + '-environment'" [value]="selectedEnvironment()" (change)="selectEnvironment($any($event.target).value)">@for (environment of tryIt().environments; track environment.id) { <option [value]="environment.id">{{ environment.label }}</option> }</select></label> }
+                  <code class="try-it-url">{{ requestUrl(operation) || 'No environment configured' }}</code>
+                  @if (operation.request) { <label [for]="operation.id + '-body'">JSON request body<textarea [id]="operation.id + '-body'" rows="7" [value]="requestBody(operation)" (input)="setRequestBody(operation.id, $any($event.target).value)"></textarea></label> }
+                  @if (!canExecute(operation)) { <p class="try-it-notice">{{ executionDisabledReason(operation) }}</p> }
+                  @if (isStateChanging(operation) && canExecute(operation)) { <p class="risk-notice">This may change data in the selected environment. Review the sandbox and payload before confirming.</p> }
+                  <button type="button" class="try-it-button" [disabled]="!canExecute(operation) || executing() === operation.id" (click)="execute(operation)">@if (executing() === operation.id) { Sending… } @else if (pendingConfirmation() === operation.id) { Confirm and send {{ operation.method }} } @else { Send {{ operation.method }} request }</button>
+                  @if (tryItErrors()[operation.id]) { <p class="try-it-error" role="alert">{{ tryItErrors()[operation.id] }}</p> }
+                  @if (tryItResults()[operation.id]; as result) { <section class="try-it-result" aria-live="polite"><strong>{{ result.status }}</strong><span>{{ result.durationMs }} ms</span><pre><code>{{ result.body }}</code></pre></section> }
+                </section>
+                @if (engineeringEntries(operation.engineering).length) { <details class="engineering"><summary>DevXStream engineering details</summary><dl>@for (entry of engineeringEntries(operation.engineering); track entry[0]) { <dt>{{ entry[0] }}</dt><dd>{{ entry[1] }}</dd> }</dl></details> }
+              </article>
+            }
+          </section>
+        }
+
+        <section id="models" class="module"><p class="eyebrow">SCHEMAS</p><h2>Models</h2><p class="module-description">Reusable API contracts from the DADS definition.</p>
+          @defer (on viewport) {
+          @for (schema of document.schemas; track schema.name) { <article [id]="modelId(schema.name)" class="schema"><h3>{{ schema.name }}</h3><p>{{ schema.description }}</p><div class="schema-meta"><code>{{ schema.type || 'object' }}</code>@if (schema.enum?.length) { <span>Enum: {{ schema.enum?.join(', ') }}</span> }</div>@if (schemaEntries(schema).length) { <div class="schema-properties"><div class="schema-head"><span>Property</span><span>Type</span><span>Description</span></div>@for (property of schemaEntries(schema); track property[0]) { <div class="schema-row"><strong>{{ property[0] }}{{ schema.required?.includes(property[0]) ? ' *' : '' }}</strong><code>{{ property[1].type || 'object' }}{{ property[1].format ? ' · ' + property[1].format : '' }}</code><span>{{ property[1].description || '—' }}</span></div> }</div> }@if (schema.example !== undefined) { <h4>Example</h4><pre><code>{{ stringify(schema.example) }}</code></pre> }</article> }
+          } @placeholder { <p class="loading">Schemas load when this section enters view.</p> }
+        </section>
+      </div>
+    } @else { <div class="loading">{{ error() || 'Loading DADS documentation…' }}</div> }
+  </main>
+</div>

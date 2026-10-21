@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DevXStream.DADS.Cli/DevXStream.DADS.Cli.csproj" />
+    <Project Path="src/DevXStream.DADS.Docs/DevXStream.DADS.Docs.csproj" />
+    <Project Path="src/DevXStream.DADS.Models/DevXStream.DADS.Models.csproj" />
+    <Project Path="src/DevXStream.DADS.OpenApi/DevXStream.DADS.OpenApi.csproj" />
+    <Project Path="src/DevXStream.DADS.Serialization/DevXStream.DADS.Serialization.csproj" />
+    <Project Path="src/DevXStream.DADS.Validation/DevXStream.DADS.Validation.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DevXStream.DADS.Validation.Tests/DevXStream.DADS.Validation.Tests.csproj" />
+  </Folder>
+</Solution>

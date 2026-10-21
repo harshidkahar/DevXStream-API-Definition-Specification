@@ -1,0 +1,1 @@
+{"definitionVersion":"DADS 1.0-draft","application":{"name":"Test API","version":"1.0.0"},"modules":[{"name":"Products","endpoints":[{"name":"One","method":"GET","route":"/products","summary":"One","responses":[{"statusCode":"200","description":"OK"}]},{"name":"Two","method":"GET","route":"/products","summary":"Two","responses":[{"statusCode":"200","description":"OK"}]}]}]}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://devxstream.com/schemas/dads/v1.json",
+  "definitionVersion": "DADS 1.0",
+  "application": {
+    "name": "Northstar Commerce API",
+    "version": "1.0.0",
+    "description": "A reference DADS application showing a DevXStream-branded API documentation experience.",
+    "framework": "net10.0",
+    "architecture": "Clean Architecture"
+  },
+  "servers": [{ "url": "https://api.northstar.example/v1", "description": "Production" }],
+  "modules": [
+    {
+      "name": "Catalog",
+      "description": "Public product discovery and product details.",
+      "endpoints": [
+        {
+          "name": "ListProducts",
+          "method": "GET",
+          "route": "/products",
+          "summary": "List products",
+          "description": "Returns a paginated product collection. Results can be filtered by category.",
+          "parameters": [{ "name": "category", "in": "query", "type": "string", "required": false, "description": "Limits results to a catalogue category.", "example": "lighting" }, { "name": "page", "in": "query", "type": "integer", "required": false, "description": "One-based page number.", "example": 1 }],
+          "responses": [{ "statusCode": "200", "description": "Product page", "schema": "Product", "example": { "items": [{ "id": "prd_100", "name": "Arc Lamp", "price": 129.99 }], "page": 1, "total": 1 } }],
+          "engineering": { "cqrs": "Query", "handler": "ListProductsQueryHandler", "cache": "60 seconds", "authorization": "Anonymous" }
+        },
+        {
+          "name": "GetProduct",
+          "method": "GET",
+          "route": "/products/{id}",
+          "summary": "Get product",
+          "description": "Returns a single product by its stable identifier.",
+          "parameters": [{ "name": "id", "in": "path", "type": "uuid", "required": true, "description": "Stable product identifier.", "example": "prd_100" }],
+          "responses": [{ "statusCode": "200", "description": "Product", "schema": "Product", "example": { "id": "prd_100", "name": "Arc Lamp", "price": 129.99 } }, { "statusCode": "404", "description": "Product was not found" }],
+          "engineering": { "cqrs": "Query", "handler": "GetProductQueryHandler", "authorization": "Anonymous" }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "description": "Authenticated customer checkout operations.",
+      "endpoints": [
+        {
+          "name": "CreateOrder",
+          "method": "POST",
+          "route": "/orders",
+          "summary": "Create order",
+          "description": "Creates an order for the authenticated customer.",
+          "request": { "schema": "CreateOrderRequest", "description": "Products and shipping address selected by the customer.", "contentType": "application/json", "example": { "items": [{ "productId": "prd_100", "quantity": 1 }], "shippingAddressId": "adr_200" } },
+          "responses": [{ "statusCode": "201", "description": "Order created", "example": { "id": "ord_300", "status": "Pending" } }, { "statusCode": "400", "description": "Request validation failed" }],
+          "engineering": { "cqrs": "Command", "handler": "CreateOrderCommandHandler", "transaction": "Required", "authorization": "Customer" }
+        }
+      ]
+    }
+  ],
+  "schemas": [
+    { "name": "CreateOrderRequest", "description": "The request payload used to create an order.", "type": "object", "required": ["items", "shippingAddressId"], "properties": { "items": { "type": "array", "description": "Products and quantities to order.", "items": { "type": "object" } }, "shippingAddressId": { "type": "string", "description": "Saved customer shipping address.", "format": "identifier" } }, "example": { "items": [{ "productId": "prd_100", "quantity": 1 }], "shippingAddressId": "adr_200" } },
+    { "name": "Product", "description": "A catalogue product exposed to API consumers.", "type": "object", "required": ["id", "name", "price"], "properties": { "id": { "type": "string", "description": "Stable product identifier." }, "name": { "type": "string", "description": "Public product name." }, "price": { "type": "number", "description": "Current unit price." } }, "example": { "id": "prd_100", "name": "Arc Lamp", "price": 129.99 } }
+  ]
+}

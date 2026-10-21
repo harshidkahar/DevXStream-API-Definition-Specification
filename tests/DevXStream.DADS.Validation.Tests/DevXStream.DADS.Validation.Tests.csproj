@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><IsPackable>false</IsPackable></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/DevXStream.DADS.Validation/DevXStream.DADS.Validation.csproj" />
+    <ProjectReference Include="../../src/DevXStream.DADS.Serialization/DevXStream.DADS.Serialization.csproj" />
+    <ProjectReference Include="../../src/DevXStream.DADS.OpenApi/DevXStream.DADS.OpenApi.csproj" />
+    <ProjectReference Include="../../src/DevXStream.DADS.Docs/DevXStream.DADS.Docs.csproj" />
+  </ItemGroup>
+  <ItemGroup><None Include="fixtures\**\*" CopyToOutputDirectory="PreserveNewest" /></ItemGroup>
+</Project>

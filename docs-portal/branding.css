@@ -1,0 +1,11 @@
+/* The supplied DevXStream logo is rendered without any crop, recolour, or transformation. */
+.brand {
+  display: block;
+  margin: 0 4px 28px;
+}
+
+.brand img {
+  display: block;
+  width: 100%;
+  height: auto;
+}

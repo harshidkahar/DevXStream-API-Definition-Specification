@@ -1,0 +1,61 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Test API",
+    "version": "1.0.0",
+    "description": null
+  },
+  "servers": [],
+  "tags": [
+    {
+      "name": "Products",
+      "description": null
+    }
+  ],
+  "paths": {
+    "/products/{id}": {
+      "get": {
+        "operationId": "GetProduct",
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get product",
+        "description": null,
+        "deprecated": false,
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": null,
+            "schema": {
+              "type": "string"
+            },
+            "example": null
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                },
+                "example": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Product": {
+        "type": "object",
+        "description": null
+      }
+    }
+  }
+}

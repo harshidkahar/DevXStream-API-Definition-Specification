@@ -1,0 +1,59 @@
+name: Release DADS
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version (for example 1.0.0)
+        required: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  package-and-publish:
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 10.0.x }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: npm
+          cache-dependency-path: apps/dads-docs-web/package-lock.json
+      - run: dotnet build DevXStream.DADS.slnx -c Release --nologo
+      - run: dotnet run --project tests/DevXStream.DADS.Validation.Tests -c Release --no-build
+      - run: npm ci --prefix apps/dads-docs-web
+      - run: npm run build:dads --prefix apps/dads-docs-web
+      - run: npm run verify:preview --prefix apps/dads-docs-web
+      - run: npm run verify:a11y --prefix apps/dads-docs-web
+      - run: dotnet pack src/DevXStream.DADS.Models -c Release --no-build --output artifacts/packages
+      - run: dotnet pack src/DevXStream.DADS.Serialization -c Release --no-build --output artifacts/packages
+      - run: dotnet pack src/DevXStream.DADS.Validation -c Release --no-build --output artifacts/packages
+      - run: dotnet pack src/DevXStream.DADS.OpenApi -c Release --no-build --output artifacts/packages
+      - run: dotnet pack src/DevXStream.DADS.Docs -c Release --no-build --output artifacts/packages
+      - name: Sign packages
+        env:
+          SIGNING_CERTIFICATE_BASE64: ${{ secrets.NUGET_SIGNING_CERTIFICATE_BASE64 }}
+          SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.NUGET_SIGNING_CERTIFICATE_PASSWORD }}
+        run: |
+          echo "$SIGNING_CERTIFICATE_BASE64" | base64 --decode > signing-certificate.pfx
+          for package in artifacts/packages/*.nupkg; do
+            dotnet nuget sign "$package" --certificate-path signing-certificate.pfx --certificate-password "$SIGNING_CERTIFICATE_PASSWORD" --timestamper https://timestamp.digicert.com
+          done
+          rm signing-certificate.pfx
+      - name: NuGet login with Trusted Publishing
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: harshidkahar
+      - name: Publish signed packages
+        run: dotnet nuget push 'artifacts/packages/*.nupkg' --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - uses: actions/upload-artifact@v4
+        with: { name: dads-docs-v1, path: apps/dads-docs-web/dist/dads-docs-web/browser }

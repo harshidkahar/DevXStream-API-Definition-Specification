@@ -1,0 +1,23 @@
+# .NET build output
+[Bb]in/
+[Oo]bj/
+TestResults/
+
+# Node/Angular output
+node_modules/
+dist/
+.angular/
+
+# IDE and user-specific files
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Generated release artefacts
+artifacts/
+
+# Signing material and local configuration
+*.pfx
+*.snk
+.env

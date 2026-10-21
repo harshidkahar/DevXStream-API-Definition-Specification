@@ -1,0 +1,14 @@
+definitionVersion: DADS 1.0-draft
+application:
+  name: YAML API
+  version: 1.0.0
+modules:
+  - name: Health
+    endpoints:
+      - name: GetHealth
+        method: GET
+        route: /health
+        summary: Get health
+        responses:
+          - statusCode: "200"
+            description: OK
