@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><PackageId>DevXStream.DADS.AspNetCore</PackageId></PropertyGroup>
+  <PropertyGroup>
+    <PackageId>DevXStream.DADS.AspNetCore</PackageId>
+    <Version>1.0.1</Version>
+  </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="../DevXStream.DADS.Models/DevXStream.DADS.Models.csproj" />

@@ -36,17 +36,19 @@ The OpenAPI exporter creates an OpenAPI 3.1.1 projection. DADS-only engineering 
 
 ## ASP.NET Core integration
 
-Reference only `DevXStream.DADS.AspNetCore` from a Minimal API project. It includes the DADS model, serialization, validation, and OpenAPI packages as transitive dependencies, so it supports the complete DADS workflow from loading and validation through endpoint mapping. Handlers receive both the `HttpContext` and the source DADS operation metadata.
+Reference only `DevXStream.DADS.AspNetCore` from a Minimal API project. It includes the DADS model, serialization, validation, and OpenAPI packages as transitive dependencies, so it supports the complete DADS workflow from loading and validation through endpoint mapping.
 
 ```csharp
-app.MapDadsEndpoints(definition, operation => operation.Operation.Name switch
-{
-    "getProduct" => async (context, _) => Results.Ok(await catalog.GetAsync(context.Request.RouteValues["id"])),
-    _ => null // mapping fails at startup when a declared operation has no handler
-});
+builder.Services.AddDadsDefinition(Path.Combine(builder.Environment.ContentRootPath, "Definitions", "ecommerce.dads.json"));
+
+var app = builder.Build();
+app.MapDadsEndpoints(handlers => handlers
+    .Map("GetProduct", GetProductAsync)
+    .Map("CreateOrder", CreateOrderAsync));
+app.MapDadsOpenApi(); // serves /openapi.json for Scalar, Swagger UI, or any OpenAPI client
 ```
 
-Each mapped endpoint preserves its DADS operation name and adds `DadsOperationMetadata` to ASP.NET Core endpoint metadata, making it available to conventions, filters, and documentation tooling.
+Every declared operation must have exactly one handler. Each mapped endpoint preserves its DADS operation name and adds `DadsOperationMetadata` to ASP.NET Core endpoint metadata, making it available to conventions, filters, and documentation tooling. Use the existing resolver overload only when a handler needs access to the complete `DadsOperationContext`.
 
 ## Build the branded portal
 

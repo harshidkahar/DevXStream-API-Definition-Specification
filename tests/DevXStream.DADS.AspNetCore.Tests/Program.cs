@@ -3,6 +3,7 @@ using DevXStream.DADS.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
 var definition = new DadsDefinition(
     "DADS 1.0",
@@ -54,4 +55,18 @@ catch (InvalidOperationException)
 }
 
 Console.WriteLine($"{(missingHandlerThrows ? "PASS" : "FAIL")} rejects missing handlers");
-return missingHandlerThrows && !invoked ? 0 : 1;
+
+var convenienceBuilder = WebApplication.CreateBuilder();
+convenienceBuilder.Services.AddSingleton(definition);
+var convenienceApp = convenienceBuilder.Build();
+convenienceApp.MapDadsEndpoints(handlers => handlers.Map("getProduct", GetProduct));
+convenienceApp.MapDadsOpenApi();
+var convenienceEndpoints = ((IEndpointRouteBuilder)convenienceApp).DataSources.SelectMany(source => source.Endpoints).ToArray();
+var conveniencePasses = convenienceEndpoints.Length == 2
+    && convenienceEndpoints.Any(endpoint => endpoint.Metadata.GetMetadata<IEndpointNameMetadata>()?.EndpointName == "getProduct")
+    && convenienceEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/openapi.json");
+
+Console.WriteLine($"{(conveniencePasses ? "PASS" : "FAIL")} maps fluent handlers and OpenAPI endpoint");
+return missingHandlerThrows && !invoked && conveniencePasses ? 0 : 1;
+
+static IResult GetProduct(string id) => Results.Ok(id);
