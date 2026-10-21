@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/DevXStream.DADS.Cli/DevXStream.DADS.Cli.csproj" />
+    <Project Path="src/DevXStream.DADS.AspNetCore/DevXStream.DADS.AspNetCore.csproj" />
     <Project Path="src/DevXStream.DADS.Docs/DevXStream.DADS.Docs.csproj" />
     <Project Path="src/DevXStream.DADS.Models/DevXStream.DADS.Models.csproj" />
     <Project Path="src/DevXStream.DADS.OpenApi/DevXStream.DADS.OpenApi.csproj" />
@@ -9,5 +10,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/DevXStream.DADS.Validation.Tests/DevXStream.DADS.Validation.Tests.csproj" />
+    <Project Path="tests/DevXStream.DADS.AspNetCore.Tests/DevXStream.DADS.AspNetCore.Tests.csproj" />
   </Folder>
 </Solution>

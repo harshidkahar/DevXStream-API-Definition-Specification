@@ -34,6 +34,20 @@ dotnet run --project src/DevXStream.DADS.Cli -- build-docs-data samples/ecommerc
 
 The OpenAPI exporter creates an OpenAPI 3.1.1 projection. DADS-only engineering metadata is preserved as the `x-devxstream-engineering` extension.
 
+## ASP.NET Core integration
+
+Reference `DevXStream.DADS.AspNetCore` from a Minimal API project and map operations from a loaded, validated definition. Handlers receive both the `HttpContext` and the source DADS operation metadata.
+
+```csharp
+app.MapDadsEndpoints(definition, operation => operation.Operation.Name switch
+{
+    "getProduct" => async (context, _) => Results.Ok(await catalog.GetAsync(context.Request.RouteValues["id"])),
+    _ => null // mapping fails at startup when a declared operation has no handler
+});
+```
+
+Each mapped endpoint preserves its DADS operation name and adds `DadsOperationMetadata` to ASP.NET Core endpoint metadata, making it available to conventions, filters, and documentation tooling.
+
 ## Build the branded portal
 
 ```powershell
