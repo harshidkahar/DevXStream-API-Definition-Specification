@@ -38,22 +38,12 @@ jobs:
       - run: dotnet pack src/DevXStream.DADS.Validation -c Release --no-build --output artifacts/packages
       - run: dotnet pack src/DevXStream.DADS.OpenApi -c Release --no-build --output artifacts/packages
       - run: dotnet pack src/DevXStream.DADS.Docs -c Release --no-build --output artifacts/packages
-      - name: Sign packages
-        env:
-          SIGNING_CERTIFICATE_BASE64: ${{ secrets.NUGET_SIGNING_CERTIFICATE_BASE64 }}
-          SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.NUGET_SIGNING_CERTIFICATE_PASSWORD }}
-        run: |
-          echo "$SIGNING_CERTIFICATE_BASE64" | base64 --decode > signing-certificate.pfx
-          for package in artifacts/packages/*.nupkg; do
-            dotnet nuget sign "$package" --certificate-path signing-certificate.pfx --certificate-password "$SIGNING_CERTIFICATE_PASSWORD" --timestamper https://timestamp.digicert.com
-          done
-          rm signing-certificate.pfx
       - name: NuGet login with Trusted Publishing
         uses: NuGet/login@v1
         id: nuget-login
         with:
           user: harshidkahar
-      - name: Publish signed packages
+      - name: Publish packages
         run: dotnet nuget push 'artifacts/packages/*.nupkg' --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
       - uses: actions/upload-artifact@v4
         with: { name: dads-docs-v1, path: apps/dads-docs-web/dist/dads-docs-web/browser }

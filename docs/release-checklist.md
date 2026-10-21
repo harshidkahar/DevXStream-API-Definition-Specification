@@ -6,7 +6,7 @@
 - [ ] Run `dotnet build DevXStream.DADS.slnx --nologo` and the validation test project.
 - [ ] Run `npm ci --prefix apps/dads-docs-web`, `npm run build:dads --prefix apps/dads-docs-web`, `npm run verify:preview --prefix apps/dads-docs-web`, and `npm run verify:a11y --prefix apps/dads-docs-web`.
 - [ ] Confirm `npm audit --omit=dev --prefix apps/dads-docs-web` reports no production vulnerabilities.
-- [ ] Check package metadata, MIT license, README, deterministic builds, and signed `.nupkg` files.
+- [ ] Check package metadata, MIT license, README, and deterministic builds. Package signing is optional for v1.0.0 and can be enabled in a future release after DevXStream registers a trusted code-signing certificate with NuGet.org.
 - [ ] Review Try-it configuration: disabled by default and no production allow-list.
 
 ## Release

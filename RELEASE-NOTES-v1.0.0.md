@@ -18,4 +18,4 @@ npm ci --prefix apps/dads-docs-web
 npm run build:dads --prefix apps/dads-docs-web
 ```
 
-Read the [v1 specification](docs/specification-v1.md), [migration notes](docs/migration-to-v1.md), [FAQ](docs/faq.md), and [release checklist](docs/release-checklist.md). The release workflow signs and publishes packages only after protected signing and NuGet publishing secrets are configured.
+Read the [v1 specification](docs/specification-v1.md), [migration notes](docs/migration-to-v1.md), [FAQ](docs/faq.md), and [release checklist](docs/release-checklist.md). The release workflow publishes through NuGet Trusted Publishing without a stored API key. Package signing will be added after DevXStream obtains a trusted code-signing certificate.
