@@ -69,6 +69,3 @@ Live request execution is opt-in and sandbox-only. See the [try-it policy](docs/
 
 The library packages use the MIT license; see [LICENSE](LICENSE). The ECommerce sample remains the complete installation, validation, portal-generation, and OpenAPI-export reference.
 
-## Run a DADS-integrated Web API
-
-The [Northstar Commerce API sample](samples/Northstar.Commerce.Api/README.md) is an ASP.NET Core 10 application that installs the public DADS packages, validates the ECommerce definition on startup, and generates its `/openapi.json` endpoint directly from that same definition.

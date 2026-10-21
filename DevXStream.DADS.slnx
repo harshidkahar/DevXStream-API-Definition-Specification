@@ -10,7 +10,4 @@
   <Folder Name="/tests/">
     <Project Path="tests/DevXStream.DADS.Validation.Tests/DevXStream.DADS.Validation.Tests.csproj" />
   </Folder>
-  <Folder Name="/samples/">
-    <Project Path="samples/Northstar.Commerce.Api/Northstar.Commerce.Api.csproj" />
-  </Folder>
 </Solution>
