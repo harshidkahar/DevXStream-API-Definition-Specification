@@ -92,11 +92,34 @@ var automaticPasses = ((IEndpointRouteBuilder)automaticApp).DataSources.SelectMa
     .Any(endpoint => endpoint.Metadata.GetMetadata<IEndpointNameMetadata>()?.EndpointName == "getProduct");
 
 Console.WriteLine($"{(automaticPasses ? "PASS" : "FAIL")} discovers handlers from engineering metadata");
-return missingHandlerThrows && !invoked && conveniencePasses && automaticPasses ? 0 : 1;
+
+var runtimeDefinitionPath = Path.Combine(Path.GetTempPath(), $"dads-runtime-{Guid.NewGuid():N}.json");
+await File.WriteAllTextAsync(runtimeDefinitionPath, """{ "definitionVersion": "DADS 1.0", "application": { "name": "Runtime Test", "version": "1" }, "modules": [{ "name": "Runtime", "endpoints": [{ "name": "runtimeOperation", "method": "GET", "route": "/runtime", "summary": "Runtime", "responses": [{ "statusCode": "200", "description": "OK" }], "engineering": { "handler": "AutoRuntimeHandler" } }] }] }""");
+var runtimeBuilder = WebApplication.CreateBuilder();
+runtimeBuilder.Services.AddDevXStreamDads(options =>
+{
+    options.DefinitionPath = runtimeDefinitionPath;
+    options.HandlerAssembly = typeof(AutoRuntimeHandler).Assembly;
+});
+var runtimeApp = runtimeBuilder.Build();
+runtimeApp.MapDevXStreamDads();
+var runtimeEndpoints = ((IEndpointRouteBuilder)runtimeApp).DataSources.SelectMany(source => source.Endpoints).ToArray();
+var runtimePasses = runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/runtime")
+    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads")
+    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/definition.json");
+File.Delete(runtimeDefinitionPath);
+
+Console.WriteLine($"{(runtimePasses ? "PASS" : "FAIL")} maps DADS runtime and native UI");
+return missingHandlerThrows && !invoked && conveniencePasses && automaticPasses && runtimePasses ? 0 : 1;
 
 static IResult GetProduct(string id) => Results.Ok(id);
 
 public sealed class AutoGetProductHandler : IDadsOperationHandler
+{
+    public Task<IResult> HandleAsync(HttpContext httpContext, DadsOperationContext operation) => Task.FromResult<IResult>(Results.Ok());
+}
+
+public sealed class AutoRuntimeHandler : IDadsOperationHandler
 {
     public Task<IResult> HandleAsync(HttpContext httpContext, DadsOperationContext operation) => Task.FromResult<IResult>(Results.Ok());
 }
