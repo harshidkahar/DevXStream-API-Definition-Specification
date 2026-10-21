@@ -68,4 +68,3 @@ Live request execution is opt-in and sandbox-only. See the [try-it policy](docs/
 - [Release checklist](docs/release-checklist.md) and [quality gate](docs/release-quality-gate.md)
 
 The library packages use the MIT license; see [LICENSE](LICENSE). The ECommerce sample remains the complete installation, validation, portal-generation, and OpenAPI-export reference.
-
