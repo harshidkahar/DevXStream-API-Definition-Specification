@@ -110,7 +110,24 @@ var runtimePasses = runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint r
 File.Delete(runtimeDefinitionPath);
 
 Console.WriteLine($"{(runtimePasses ? "PASS" : "FAIL")} maps DADS runtime and native UI");
-return missingHandlerThrows && !invoked && conveniencePasses && automaticPasses && runtimePasses ? 0 : 1;
+
+var existingDefinitionPath = Path.Combine(Path.GetTempPath(), $"dads-existing-{Guid.NewGuid():N}.json");
+await File.WriteAllTextAsync(existingDefinitionPath, """{ "definitionVersion": "DADS 1.0", "application": { "name": "Existing Test", "version": "1" }, "modules": [{ "name": "Existing", "endpoints": [{ "name": "existingOperation", "method": "GET", "route": "/existing", "summary": "Existing", "responses": [{ "statusCode": "200", "description": "OK" }] }] }] }""");
+var existingBuilder = WebApplication.CreateBuilder();
+existingBuilder.Services.AddDevXStreamDads(options =>
+{
+    options.DefinitionPath = existingDefinitionPath;
+    options.EndpointMode = DadsEndpointMode.ExistingApplicationEndpoints;
+});
+var existingApp = existingBuilder.Build();
+existingApp.MapGet("/existing", () => Results.Ok());
+existingApp.MapDevXStreamDads();
+var existingPasses = ((IEndpointRouteBuilder)existingApp).DataSources.SelectMany(source => source.Endpoints)
+    .Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads");
+File.Delete(existingDefinitionPath);
+
+Console.WriteLine($"{(existingPasses ? "PASS" : "FAIL")} supports existing Minimal API endpoints");
+return missingHandlerThrows && !invoked && conveniencePasses && automaticPasses && runtimePasses && existingPasses ? 0 : 1;
 
 static IResult GetProduct(string id) => Results.Ok(id);
 

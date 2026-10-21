@@ -50,6 +50,20 @@ app.MapDevXStreamDads(); // maps operations and serves the native UI at /dads
 
 Implement `IDadsOperationHandler` classes whose names match each operation's `engineering.handler` value. The UI reads the validated DADS definition from `/dads/definition.json`; neither Swagger nor Scalar is required.
 
+Existing Minimal API and API Controller projects do not need DADS handler classes. Map their existing routes first, then select `ExistingApplicationEndpoints`; DADS verifies that every defined method and route exists and serves the same native UI:
+
+```csharp
+builder.Services.AddDevXStreamDads(options =>
+{
+    options.DefinitionPath = "Definitions/api.dads.json";
+    options.EndpointMode = DadsEndpointMode.ExistingApplicationEndpoints;
+});
+
+var app = builder.Build();
+app.MapControllers(); // or app.MapGet(...), app.MapPost(...), and so on
+app.MapDevXStreamDads();
+```
+
 ```csharp
 builder.Services.AddDadsDefinition(Path.Combine(builder.Environment.ContentRootPath, "Definitions", "ecommerce.dads.json"));
 
