@@ -3,5 +3,8 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="../DevXStream.DADS.Models/DevXStream.DADS.Models.csproj" />
+    <ProjectReference Include="../DevXStream.DADS.Serialization/DevXStream.DADS.Serialization.csproj" />
+    <ProjectReference Include="../DevXStream.DADS.Validation/DevXStream.DADS.Validation.csproj" />
+    <ProjectReference Include="../DevXStream.DADS.OpenApi/DevXStream.DADS.OpenApi.csproj" />
   </ItemGroup>
 </Project>

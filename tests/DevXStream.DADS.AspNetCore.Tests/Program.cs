@@ -13,6 +13,12 @@ var definition = new DadsDefinition(
     ])],
     []);
 
+var facadeWorkflowPasses = DadsDefinitionDocument.LoadValidated("""{ "definitionVersion": "DADS 1.0", "application": { "name": "Test", "version": "1" }, "modules": [] }""").Application.Name == "Test"
+    && DadsDefinitionDocument.ExportOpenApi(definition)["openapi"]?.GetValue<string>() == "3.1.1";
+
+Console.WriteLine($"{(facadeWorkflowPasses ? "PASS" : "FAIL")} exposes DADS workflow through ASP.NET Core package");
+if (!facadeWorkflowPasses) return 1;
+
 var builder = WebApplication.CreateBuilder();
 var app = builder.Build();
 var invoked = false;

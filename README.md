@@ -36,7 +36,7 @@ The OpenAPI exporter creates an OpenAPI 3.1.1 projection. DADS-only engineering 
 
 ## ASP.NET Core integration
 
-Reference `DevXStream.DADS.AspNetCore` from a Minimal API project and map operations from a loaded, validated definition. Handlers receive both the `HttpContext` and the source DADS operation metadata.
+Reference only `DevXStream.DADS.AspNetCore` from a Minimal API project. It includes the DADS model, serialization, validation, and OpenAPI packages as transitive dependencies, so it supports the complete DADS workflow from loading and validation through endpoint mapping. Handlers receive both the `HttpContext` and the source DADS operation metadata.
 
 ```csharp
 app.MapDadsEndpoints(definition, operation => operation.Operation.Name switch
