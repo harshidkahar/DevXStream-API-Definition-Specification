@@ -3,6 +3,7 @@ body { background:#f6f7fe; }
 .shell { grid-template-columns:270px minmax(0,1fr); }
 .sidebar { padding:22px 18px; box-shadow:3px 0 18px #18203406; }
 .brand { max-width:154px; margin:2px 4px 30px; }
+.dads-powered-by{display:flex;align-items:center;gap:10px;margin:28px 4px 4px;padding:11px 10px;border:1px solid #e2e5f1;border-radius:11px;background:linear-gradient(135deg,#fbfbff,#f2f5ff);color:#27314c}.dads-powered-by img{width:34px;height:34px;object-fit:contain}.dads-powered-by span{display:grid;gap:1px;line-height:1.15}.dads-powered-by strong{font-size:13px;letter-spacing:.04em;color:#4331e9}.dads-powered-by a{width:max-content;text-decoration:none}.dads-powered-by small{color:#687590;font-size:10px;font-weight:650}.dads-powered-by a:hover small,.dads-powered-by a:focus-visible small{color:#4f3eff;text-decoration:underline}.sidebar footer.dads-powered-by{margin-top:28px}
 .topbar { min-height:92px; padding:18px 42px; background:#fff; }
 .topbar h1 { font-size:23px; letter-spacing:-.02em; }
 #document-content { max-width:1320px; width:100%; margin:0 auto; padding:40px 48px 96px; }

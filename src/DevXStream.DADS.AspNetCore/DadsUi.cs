@@ -12,6 +12,7 @@ internal static class DadsUi
     internal static string Branding { get; } = ReadText("branding.css");
     internal static string Client { get; } = ReadText("client.css");
     internal static byte[] Logo { get; } = ReadBytes("devxstream-logo.png");
+    internal static byte[] DadsLogo { get; } = ReadBytes("dads-logo.png");
 
     internal static string GetHtml(string uiPath) =>
         ReadText("index.html")
@@ -19,6 +20,7 @@ internal static class DadsUi
             .Replace("./branding.css", $"{uiPath}/branding.css", StringComparison.Ordinal)
             .Replace("./client.css", $"{uiPath}/client.css", StringComparison.Ordinal)
             .Replace("./assets/devxstream-logo.png", $"{uiPath}/assets/devxstream-logo.png", StringComparison.Ordinal)
+            .Replace("./assets/dads-logo.png", $"{uiPath}/assets/dads-logo.png", StringComparison.Ordinal)
             .Replace("./app.js", $"{uiPath}/app.js", StringComparison.Ordinal);
 
     internal static string GetScript(string definitionEndpointPath) =>

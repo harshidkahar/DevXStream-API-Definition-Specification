@@ -80,6 +80,7 @@ public static class DevXStreamDadsExtensions
         endpoints.MapGet($"{options.UiPath}/client.css", () => Results.Content(DadsUi.Client, "text/css; charset=utf-8"));
         endpoints.MapGet($"{options.UiPath}/app.js", () => Results.Content(DadsUi.GetScript(options.DefinitionEndpointPath), "text/javascript; charset=utf-8"));
         endpoints.MapGet($"{options.UiPath}/assets/devxstream-logo.png", () => Results.File(DadsUi.Logo, "image/png"));
+        endpoints.MapGet($"{options.UiPath}/assets/dads-logo.png", () => Results.File(DadsUi.DadsLogo, "image/png"));
         return endpoints;
     }
 

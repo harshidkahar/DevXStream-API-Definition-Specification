@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>DevXStream.DADS.AspNetCore</PackageId>
-    <Version>1.0.16</Version>
+    <Version>1.0.17</Version>
+    <Description>Single-package ASP.NET Core integration for DADS contracts, endpoint validation or mapping, OpenAPI export, and the native DevXStream API portal.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -11,11 +13,14 @@
     <ProjectReference Include="../DevXStream.DADS.OpenApi/DevXStream.DADS.OpenApi.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="$(MSBuildThisFileDirectory)..\..\README.md" />
+    <None Include="README.md" Pack="true" PackagePath="" />
     <EmbeddedResource Include="../../docs-portal/index.html" LogicalName="DevXStream.DADS.AspNetCore.Portal.index.html" />
     <EmbeddedResource Include="../../docs-portal/styles.css" LogicalName="DevXStream.DADS.AspNetCore.Portal.styles.css" />
     <EmbeddedResource Include="../../docs-portal/branding.css" LogicalName="DevXStream.DADS.AspNetCore.Portal.branding.css" />
     <EmbeddedResource Include="../../docs-portal/client.css" LogicalName="DevXStream.DADS.AspNetCore.Portal.client.css" />
     <EmbeddedResource Include="../../docs-portal/app.js" LogicalName="DevXStream.DADS.AspNetCore.Portal.app.js" />
     <EmbeddedResource Include="../../docs-portal/assets/devxstream-logo.png" LogicalName="DevXStream.DADS.AspNetCore.Portal.devxstream-logo.png" />
+    <EmbeddedResource Include="../../docs-portal/assets/dads-logo.png" LogicalName="DevXStream.DADS.AspNetCore.Portal.dads-logo.png" />
   </ItemGroup>
 </Project>
