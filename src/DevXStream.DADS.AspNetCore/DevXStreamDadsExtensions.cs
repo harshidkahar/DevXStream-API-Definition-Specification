@@ -74,7 +74,12 @@ public static class DevXStreamDadsExtensions
         else
             endpoints.ValidateDadsEndpoints(definition);
         endpoints.MapGet(options.DefinitionEndpointPath, () => Results.Json(definition, DadsJsonOptions));
-        endpoints.MapGet(options.UiPath, () => Results.Content(DadsUi.Html.Replace("__DADS_DEFINITION_URL__", options.DefinitionEndpointPath, StringComparison.Ordinal), "text/html; charset=utf-8"));
+        endpoints.MapGet(options.UiPath, () => Results.Content(DadsUi.GetHtml(options.UiPath), "text/html; charset=utf-8"));
+        endpoints.MapGet($"{options.UiPath}/styles.css", () => Results.Content(DadsUi.Styles, "text/css; charset=utf-8"));
+        endpoints.MapGet($"{options.UiPath}/branding.css", () => Results.Content(DadsUi.Branding, "text/css; charset=utf-8"));
+        endpoints.MapGet($"{options.UiPath}/client.css", () => Results.Content(DadsUi.Client, "text/css; charset=utf-8"));
+        endpoints.MapGet($"{options.UiPath}/app.js", () => Results.Content(DadsUi.GetScript(options.DefinitionEndpointPath), "text/javascript; charset=utf-8"));
+        endpoints.MapGet($"{options.UiPath}/assets/devxstream-logo.png", () => Results.File(DadsUi.Logo, "image/png"));
         return endpoints;
     }
 

@@ -106,7 +106,11 @@ runtimeApp.MapDevXStreamDads();
 var runtimeEndpoints = ((IEndpointRouteBuilder)runtimeApp).DataSources.SelectMany(source => source.Endpoints).ToArray();
 var runtimePasses = runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/runtime")
     && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads")
-    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/definition.json");
+    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/definition.json")
+    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/styles.css")
+    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/branding.css")
+    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/app.js")
+    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/assets/devxstream-logo.png");
 File.Delete(runtimeDefinitionPath);
 
 Console.WriteLine($"{(runtimePasses ? "PASS" : "FAIL")} maps DADS runtime and native UI");

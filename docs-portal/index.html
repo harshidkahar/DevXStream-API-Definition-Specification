@@ -7,6 +7,7 @@
     <title>DevXStream DADS Docs</title>
     <link rel="stylesheet" href="./styles.css" />
     <link rel="stylesheet" href="./branding.css" />
+    <link rel="stylesheet" href="./client.css" />
   </head>
   <body>
     <div class="shell">
@@ -23,6 +24,7 @@
         <header class="topbar">
           <div><span class="eyebrow">API REFERENCE</span><h1 id="api-title">Loading…</h1></div>
           <div class="topbar-actions">
+            <button id="authorize" class="button button-secondary" type="button">Authorize</button>
             <button id="theme-toggle" type="button" aria-label="Toggle colour theme">◐</button>
             <a id="download-definition" class="button button-secondary" download>Download DADS</a>
             <button id="download-openapi" class="button" type="button">Download OpenAPI</button>
@@ -41,6 +43,14 @@
         <details class="engineering"><summary>DevXStream engineering details</summary><dl></dl></details>
       </article>
     </template>
+    <dialog id="auth-dialog" class="auth-dialog">
+      <form method="dialog">
+        <header><h2>Authorization</h2><button value="cancel" class="icon-button" aria-label="Close authorization dialog">×</button></header>
+        <p>Credentials are kept only in this browser session and are sent only when you use <strong>Send request</strong>.</p>
+        <div id="auth-fields"></div>
+        <footer><button id="clear-auth" class="button-secondary" type="button">Clear credentials</button><button value="default">Done</button></footer>
+      </form>
+    </dialog>
     <script src="./app.js"></script>
   </body>
 </html>

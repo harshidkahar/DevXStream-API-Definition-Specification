@@ -38,17 +38,17 @@ The OpenAPI exporter creates an OpenAPI 3.1.1 projection. DADS-only engineering 
 
 Reference only `DevXStream.DADS.AspNetCore` from a Minimal API project. It includes the DADS model, serialization, validation, and OpenAPI packages as transitive dependencies, so it supports the complete DADS workflow from loading and validation through endpoint mapping.
 
-For the complete runtime experience—validated definition loading, automatic handler discovery, endpoint mapping, and the native DADS UI—use one registration and one route call:
+For the complete runtime experience—validated definition loading, automatic handler discovery, endpoint mapping, and the embedded DevXStream documentation portal—use one registration and one route call:
 
 ```csharp
 builder.Services.AddDevXStreamDads(options =>
     options.DefinitionPath = Path.Combine(builder.Environment.ContentRootPath, "Definitions", "api.dads.json"));
 
 var app = builder.Build();
-app.MapDevXStreamDads(); // maps operations and serves the native UI at /dads
+app.MapDevXStreamDads(); // maps operations and serves the DevXStream portal at /dads
 ```
 
-Implement `IDadsOperationHandler` classes whose names match each operation's `engineering.handler` value. The UI reads the validated DADS definition from `/dads/definition.json`; neither Swagger nor Scalar is required.
+Implement `IDadsOperationHandler` classes whose names match each operation's `engineering.handler` value. The embedded portal provides navigation, search, API/model reference, theme switching, DADS download, OpenAPI download, and engineering details from the validated definition at `/dads/definition.json`; neither Swagger nor Scalar is required.
 
 Existing Minimal API and API Controller projects do not need DADS handler classes. Map their existing routes first, then select `ExistingApplicationEndpoints`; DADS verifies that every defined method and route exists and serves the same native UI:
 

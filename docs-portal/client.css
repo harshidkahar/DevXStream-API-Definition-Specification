@@ -1,0 +1,50 @@
+/* Must load after the base portal styles: this is the interactive API-client layout. */
+body { background:#f6f7fe; }
+.shell { grid-template-columns:270px minmax(0,1fr); }
+.sidebar { padding:22px 18px; box-shadow:3px 0 18px #18203406; }
+.brand { max-width:154px; margin:2px 4px 30px; }
+.topbar { min-height:92px; padding:18px 42px; background:#fff; }
+.topbar h1 { font-size:23px; letter-spacing:-.02em; }
+#document-content { max-width:none; width:100%; padding:40px 48px 96px; }
+.intro { display:none; }
+.group-heading { margin:0 0 18px; }
+.group-heading h2 { font-size:25px; }
+.group-heading p { font-size:15px; }
+.operation.api-client { max-width:none; background:transparent; border:0; border-radius:0; box-shadow:none; padding:0; margin:22px 0 54px; }
+.api-client > .operation-heading { min-height:48px; padding:0 2px; }
+.api-client > h2 { margin:4px 2px 4px; font-size:28px; letter-spacing:-.025em; }
+.api-client > .description { margin:0 2px 20px; font-size:15px; }
+.method { border-radius:6px; padding:5px 10px; }
+.route { font-size:20px; font-weight:750; }
+.security-chip { margin-left:4px; background:#eeeaff; border-color:#dcd4ff; color:#4c3fff; font-weight:700; }
+.endpoint-workspace { display:grid; grid-template-columns:minmax(430px,1fr) minmax(500px,1.12fr); align-items:stretch; gap:14px; margin:0; border:0; }
+.operation-contract { min-height:640px; padding:26px; background:#fff; border:1px solid #e2e6f0; border-radius:13px; }
+.operation-contract > .section-title { font-size:17px; margin:0 0 10px; }
+.operation-contract .request-field { padding:13px 0; margin:0; border-top:1px solid #edf0f6; }
+.operation-contract .request-field:first-child { border-top:0; }
+.request-field span { color:#4c5771; }
+.request-field strong { color:#182034; }
+.request-field input,.request-field textarea { border-color:#dfe4ef; background:#fafbff; }
+.operation-contract .responses { margin-top:28px; }
+.operation-contract .response { grid-template-columns:70px 1fr; border:1px solid #e6eaf2; background:#fbfcff; }
+.operation-console { display:flex; flex-direction:column; min-height:640px; padding:16px; border:1px solid #26334c; border-radius:13px; background:linear-gradient(145deg,#192236,#0d1422); box-shadow:0 14px 32px #19223b24; }
+.operation-console .client-toolbar { align-items:center; min-height:40px; padding-bottom:12px; border-bottom:1px solid #344058; }
+.operation-console .client-toolbar label { display:flex; align-items:center; gap:9px; min-width:0; color:#c7cee2; }
+.operation-console .snippet-language { width:220px; margin:0; padding:8px 10px; background:#20263c; border-color:#3c4666; color:#f3f6ff; }
+.operation-console .send-request { padding:10px 16px; background:linear-gradient(135deg,#6b5cff,#4a38f4); box-shadow:0 4px 12px #4835ec55; }
+.operation-console .code-sample { flex:1; min-height:270px; margin:14px 0 0; border:0; background:#101827; color:#dce8ff; font-size:13px; line-height:1.55; }
+.operation-console .copy-snippet { position:static; top:auto; right:auto; align-self:flex-end; float:none; margin:9px 0; }
+.operation-console .live-response { margin-top:0; border-color:#344058; background:#131c2c; color:#e9effa; }
+.operation-console .live-response .section-title,.operation-console .response-status,.operation-console .response-headers { border-color:#344058; }
+.operation-console .response-status { color:#a7f3c7; }
+.operation-console .response-headers pre,.operation-console .response-body { background:#0d1422; }
+.topbar-actions .button { white-space:nowrap; }
+.schema-card { max-width:none; }
+.schema-properties { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:10px; margin-top:18px; }
+.schema-property { position:relative; min-height:78px; padding:14px 74px 14px 15px; border:1px solid #e3e7f0; border-radius:9px; background:#fbfcff; }
+.schema-property strong { display:block; color:#182034; }
+.schema-type { display:block; margin-top:3px; color:#6357de; font:12px ui-monospace,SFMono-Regular,Consolas,monospace; }
+.schema-description { margin-top:7px; color:#69758c; font-size:13px; }
+.required-badge { position:absolute; right:12px; top:14px; padding:2px 6px; border-radius:999px; background:#fff0f1; color:#c23043; font-size:11px; font-weight:750; }
+@media (max-width:1180px){#document-content{padding:34px 30px}.endpoint-workspace{grid-template-columns:minmax(360px,1fr) minmax(430px,1fr)}}
+@media (max-width:900px){.shell{grid-template-columns:1fr}.sidebar{position:static;height:auto}.topbar{padding:18px 24px}#document-content{padding:28px 22px}.endpoint-workspace{grid-template-columns:1fr}.operation-contract,.operation-console{min-height:0}.operation-console .code-sample{min-height:230px}}

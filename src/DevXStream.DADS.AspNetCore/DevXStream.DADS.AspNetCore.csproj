@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>DevXStream.DADS.AspNetCore</PackageId>
-    <Version>1.0.5</Version>
+    <Version>1.0.14</Version>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -9,5 +9,13 @@
     <ProjectReference Include="../DevXStream.DADS.Serialization/DevXStream.DADS.Serialization.csproj" />
     <ProjectReference Include="../DevXStream.DADS.Validation/DevXStream.DADS.Validation.csproj" />
     <ProjectReference Include="../DevXStream.DADS.OpenApi/DevXStream.DADS.OpenApi.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../docs-portal/index.html" LogicalName="DevXStream.DADS.AspNetCore.Portal.index.html" />
+    <EmbeddedResource Include="../../docs-portal/styles.css" LogicalName="DevXStream.DADS.AspNetCore.Portal.styles.css" />
+    <EmbeddedResource Include="../../docs-portal/branding.css" LogicalName="DevXStream.DADS.AspNetCore.Portal.branding.css" />
+    <EmbeddedResource Include="../../docs-portal/client.css" LogicalName="DevXStream.DADS.AspNetCore.Portal.client.css" />
+    <EmbeddedResource Include="../../docs-portal/app.js" LogicalName="DevXStream.DADS.AspNetCore.Portal.app.js" />
+    <EmbeddedResource Include="../../docs-portal/assets/devxstream-logo.png" LogicalName="DevXStream.DADS.AspNetCore.Portal.devxstream-logo.png" />
   </ItemGroup>
 </Project>

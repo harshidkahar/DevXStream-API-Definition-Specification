@@ -23,7 +23,11 @@ public static class OpenApiExporter
             ["servers"] = new JsonArray(definition.Servers.Select(server => (JsonNode)new JsonObject { ["url"] = server.Url, ["description"] = server.Description }).ToArray()),
             ["tags"] = tags,
             ["paths"] = paths,
-            ["components"] = new JsonObject { ["schemas"] = new JsonObject(definition.Schemas.Select(schema => KeyValuePair.Create<string, JsonNode?>(schema.Name, Schema(schema)))) }
+            ["components"] = new JsonObject
+            {
+                ["schemas"] = new JsonObject(definition.Schemas.Select(schema => KeyValuePair.Create<string, JsonNode?>(schema.Name, Schema(schema)))),
+                ["securitySchemes"] = new JsonObject((definition.SecuritySchemes ?? Enumerable.Empty<KeyValuePair<string, SecuritySchemeDefinition>>()).Select(scheme => KeyValuePair.Create<string, JsonNode?>(scheme.Key, SecurityScheme(scheme.Value))))
+            }
         };
     }
 
@@ -33,6 +37,7 @@ public static class OpenApiExporter
         if (endpoint.Parameters?.Count > 0) operation["parameters"] = new JsonArray(endpoint.Parameters.Select(Parameter).ToArray());
         if (endpoint.Request is not null) operation["requestBody"] = Request(endpoint.Request);
         operation["responses"] = new JsonObject(endpoint.Responses.Select(response => KeyValuePair.Create<string, JsonNode?>(response.StatusCode, Response(response))));
+        if (endpoint.Security?.Count > 0) operation["security"] = new JsonArray(endpoint.Security.Select(name => (JsonNode)new JsonObject { [name] = new JsonArray() }).ToArray());
         if (endpoint.Engineering is not null) operation["x-devxstream-engineering"] = JsonSerializer.SerializeToNode(endpoint.Engineering);
         return operation;
     }
@@ -52,6 +57,12 @@ public static class OpenApiExporter
     {
         ["description"] = response.Description,
         ["content"] = response.Schema is null && response.Example is null ? null : new JsonObject { [response.ContentType ?? "application/json"] = new JsonObject { ["schema"] = ReferenceOrEmpty(response.Schema), ["example"] = response.Example is JsonElement example ? JsonNode.Parse(example.GetRawText()) : null } }
+    };
+
+    private static JsonObject SecurityScheme(SecuritySchemeDefinition scheme) => new()
+    {
+        ["type"] = scheme.Type, ["scheme"] = scheme.Scheme, ["bearerFormat"] = scheme.BearerFormat,
+        ["in"] = scheme.In, ["name"] = scheme.Name, ["description"] = scheme.Description
     };
 
     private static JsonObject Schema(SchemaDefinition schema)

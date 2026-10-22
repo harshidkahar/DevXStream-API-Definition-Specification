@@ -1,4 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><PackageId>DevXStream.DADS.OpenApi</PackageId></PropertyGroup>
+  <PropertyGroup><PackageId>DevXStream.DADS.OpenApi</PackageId><Version>1.0.1</Version></PropertyGroup>
   <ItemGroup><ProjectReference Include="../DevXStream.DADS.Models/DevXStream.DADS.Models.csproj" /></ItemGroup>
 </Project>

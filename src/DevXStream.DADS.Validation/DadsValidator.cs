@@ -78,6 +78,7 @@ public sealed class DadsValidator
         var modules = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var operations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var schemas = definition.Schemas.Select(schema => schema.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var securitySchemes = (definition.SecuritySchemes ?? new Dictionary<string, SecuritySchemeDefinition>()).Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
         for (var moduleIndex = 0; moduleIndex < definition.Modules.Count; moduleIndex++)
         {
             var module = definition.Modules[moduleIndex];
@@ -96,6 +97,9 @@ public sealed class DadsValidator
                     ValidateSchemaReference(response.Schema, schemas, $"{pointer}/responses", diagnostics);
                 }
                 ValidateSchemaReference(endpoint.Request?.Schema, schemas, $"{pointer}/request/schema", diagnostics);
+                foreach (var scheme in endpoint.Security ?? [])
+                    if (!securitySchemes.Contains(scheme))
+                        diagnostics.Add(new("DADS209", DiagnosticSeverity.Error, $"{pointer}/security", $"Security scheme '{scheme}' is not defined."));
             }
         }
         foreach (var duplicate in definition.Schemas.GroupBy(schema => schema.Name, StringComparer.OrdinalIgnoreCase).Where(group => group.Count() > 1)) diagnostics.Add(new("DADS204", DiagnosticSeverity.Error, "/schemas", $"Schema '{duplicate.Key}' is duplicated."));
