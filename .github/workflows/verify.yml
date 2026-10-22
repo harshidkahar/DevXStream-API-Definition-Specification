@@ -32,5 +32,6 @@ jobs:
       - run: dotnet pack src/DevXStream.DADS.Validation -c Release --output artifacts/packages
       - run: dotnet pack src/DevXStream.DADS.OpenApi -c Release --output artifacts/packages
       - run: dotnet pack src/DevXStream.DADS.Docs -c Release --output artifacts/packages
+      - run: dotnet pack src/DevXStream.DADS.AspNetCore -c Release --output artifacts/packages
       - shell: pwsh
         run: ./scripts/verify-release.ps1

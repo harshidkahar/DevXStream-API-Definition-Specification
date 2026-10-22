@@ -4,16 +4,20 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $required = @(
-  'DevXStream.DADS.Models.1.0.0.nupkg',
-  'DevXStream.DADS.Serialization.1.0.0.nupkg',
-  'DevXStream.DADS.Validation.1.0.0.nupkg',
-  'DevXStream.DADS.OpenApi.1.0.0.nupkg',
-  'DevXStream.DADS.Docs.1.0.0.nupkg'
+  'DevXStream.DADS.Models',
+  'DevXStream.DADS.Serialization',
+  'DevXStream.DADS.Validation',
+  'DevXStream.DADS.OpenApi',
+  'DevXStream.DADS.Docs',
+  'DevXStream.DADS.AspNetCore'
 )
 
-foreach ($packageName in $required) {
-  $package = Join-Path $PackageDirectory $packageName
-  if (-not (Test-Path -LiteralPath $package)) { throw "Missing release package: $packageName" }
+foreach ($packageId in $required) {
+  $matches = @(Get-ChildItem -LiteralPath $PackageDirectory -Filter "$packageId.*.nupkg" -File)
+  if ($matches.Count -eq 0) { throw "Missing release package for $packageId" }
+  if ($matches.Count -gt 1) { throw "Expected one release package for $packageId, found $($matches.Count)" }
+  $package = $matches[0].FullName
+  $packageName = $matches[0].Name
   $archive = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path -LiteralPath $package))
   try {
     $names = @($archive.Entries | ForEach-Object FullName)
