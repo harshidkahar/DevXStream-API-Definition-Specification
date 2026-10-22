@@ -35,5 +35,5 @@ public sealed record RequestBodyDefinition(string? Schema, string? Description, 
 public sealed record ResponseDefinition(string StatusCode, string Description, string? Schema, string? ContentType, JsonElement? Example);
 public sealed record SecuritySchemeDefinition(string Type, string? Scheme, string? BearerFormat, string? In, string? Name, string? Description);
 public sealed record SchemaDefinition(string Name, string? Description, string? Type, IReadOnlyDictionary<string, SchemaProperty>? Properties, IReadOnlyList<string>? Required, IReadOnlyList<JsonElement>? Enum, JsonElement? Example);
-public sealed record SchemaProperty(string? Type, string? Format, string? Description, bool? Nullable, JsonElement? Example, SchemaProperty? Items);
+public sealed record SchemaProperty(string? Type, string? Format, string? Description, bool? Nullable, JsonElement? Example, SchemaProperty? Items, string? Pattern = null);
 public sealed record EngineeringMetadata(string? Cqrs, string? Handler, string? Authorization, string? Cache, string? Transaction, string? Persistence, string? Validation);

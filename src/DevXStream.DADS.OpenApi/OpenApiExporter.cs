@@ -78,7 +78,7 @@ public static class OpenApiExporter
 
     private static JsonObject PropertySchema(SchemaProperty property)
     {
-        var result = TypeSchema(property.Type ?? "string"); result["format"] = property.Format; result["description"] = property.Description; result["nullable"] = property.Nullable;
+        var result = TypeSchema(property.Type ?? "string"); result["format"] = property.Format; result["pattern"] = property.Pattern; result["description"] = property.Description; result["nullable"] = property.Nullable;
         if (property.Example is JsonElement example) result["example"] = JsonNode.Parse(example.GetRawText());
         if (property.Items is not null) result["items"] = PropertySchema(property.Items);
         return result;
