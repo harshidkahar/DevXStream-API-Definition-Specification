@@ -51,6 +51,14 @@
         <footer><button id="clear-auth" class="button-secondary" type="button">Clear credentials</button><button value="default">Done</button></footer>
       </form>
     </dialog>
+    <dialog id="request-dialog" class="request-dialog">
+      <header class="request-dialog-header"><div><div class="operation-heading"><span id="request-method" class="method"></span><code id="request-route" class="route"></code></div><h2 id="request-dialog-title"></h2></div><form method="dialog"><button class="icon-button" aria-label="Close request dialog">×</button></form></header>
+      <div class="request-url"><span>Request URL</span><code id="request-url"></code></div>
+      <div class="request-dialog-grid">
+        <form id="request-form" class="request-editor"></form>
+        <section class="request-result"><div class="client-toolbar"><label>Code sample <select id="request-language"><option value="curl">cURL</option><option value="javascript">JavaScript fetch</option><option value="csharp">C# HttpClient</option><option value="python">Python httpx</option></select></label><button id="send-modal-request" type="button">▶ Send request</button></div><pre class="code-sample"><code id="request-code"></code></pre><button id="copy-modal-code" class="copy-dialog" type="button">Copy code</button><section class="live-response"><div class="section-title">Response</div><div id="request-response-status" class="response-status"></div><details open class="response-headers"><summary>Response headers</summary><pre><code id="request-response-headers"></code></pre></details><pre class="response-body"><code id="request-response-body"></code></pre></section></section>
+      </div>
+    </dialog>
     <script src="./app.js"></script>
   </body>
 </html>
