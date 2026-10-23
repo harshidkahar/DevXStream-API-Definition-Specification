@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>DevXStream.DADS.AspNetCore</PackageId>
-    <Version>1.0.17</Version>
+    <Version>1.0.18</Version>
     <Description>Single-package ASP.NET Core integration for DADS contracts, endpoint validation or mapping, OpenAPI export, and the native DevXStream API portal.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
@@ -22,5 +22,8 @@
     <EmbeddedResource Include="../../docs-portal/app.js" LogicalName="DevXStream.DADS.AspNetCore.Portal.app.js" />
     <EmbeddedResource Include="../../docs-portal/assets/devxstream-logo.png" LogicalName="DevXStream.DADS.AspNetCore.Portal.devxstream-logo.png" />
     <EmbeddedResource Include="../../docs-portal/assets/dads-logo.png" LogicalName="DevXStream.DADS.AspNetCore.Portal.dads-logo.png" />
+    <EmbeddedResource Include="../../docs-portal/assets/dads-wordmark.png" LogicalName="DevXStream.DADS.AspNetCore.Portal.dads-wordmark.png" />
+    <EmbeddedResource Include="../../docs-portal/assets/dads-wordmark-black.png" LogicalName="DevXStream.DADS.AspNetCore.Portal.dads-wordmark-black.png" />
+    <EmbeddedResource Include="../../docs-portal/assets/dads-wordmark-black-full.png" LogicalName="DevXStream.DADS.AspNetCore.Portal.dads-wordmark-black-full.png" />
   </ItemGroup>
 </Project>

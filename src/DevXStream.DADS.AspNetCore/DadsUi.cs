@@ -13,6 +13,9 @@ internal static class DadsUi
     internal static string Client { get; } = ReadText("client.css");
     internal static byte[] Logo { get; } = ReadBytes("devxstream-logo.png");
     internal static byte[] DadsLogo { get; } = ReadBytes("dads-logo.png");
+    internal static byte[] DadsWordmark { get; } = ReadBytes("dads-wordmark.png");
+    internal static byte[] DadsWordmarkBlack { get; } = ReadBytes("dads-wordmark-black.png");
+    internal static byte[] DadsWordmarkBlackFull { get; } = ReadBytes("dads-wordmark-black-full.png");
 
     internal static string GetHtml(string uiPath) =>
         ReadText("index.html")
@@ -21,6 +24,9 @@ internal static class DadsUi
             .Replace("./client.css", $"{uiPath}/client.css", StringComparison.Ordinal)
             .Replace("./assets/devxstream-logo.png", $"{uiPath}/assets/devxstream-logo.png", StringComparison.Ordinal)
             .Replace("./assets/dads-logo.png", $"{uiPath}/assets/dads-logo.png", StringComparison.Ordinal)
+            .Replace("./assets/dads-wordmark.png", $"{uiPath}/assets/dads-wordmark.png", StringComparison.Ordinal)
+            .Replace("./assets/dads-wordmark-black.png", $"{uiPath}/assets/dads-wordmark-black.png", StringComparison.Ordinal)
+            .Replace("./assets/dads-wordmark-black-full.png", $"{uiPath}/assets/dads-wordmark-black-full.png", StringComparison.Ordinal)
             .Replace("./app.js", $"{uiPath}/app.js", StringComparison.Ordinal);
 
     internal static string GetScript(string definitionEndpointPath) =>

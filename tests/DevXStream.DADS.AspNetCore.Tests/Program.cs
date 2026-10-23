@@ -111,7 +111,10 @@ var runtimePasses = runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint r
     && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/branding.css")
     && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/app.js")
     && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/assets/devxstream-logo.png")
-    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/assets/dads-logo.png");
+    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/assets/dads-logo.png")
+    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/assets/dads-wordmark.png")
+    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/assets/dads-wordmark-black.png")
+    && runtimeEndpoints.Any(endpoint => endpoint is RouteEndpoint routeEndpoint && routeEndpoint.RoutePattern.RawText == "/dads/assets/dads-wordmark-black-full.png");
 File.Delete(runtimeDefinitionPath);
 
 Console.WriteLine($"{(runtimePasses ? "PASS" : "FAIL")} maps DADS runtime and native UI");
