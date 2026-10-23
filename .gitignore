@@ -19,5 +19,16 @@ artifacts/
 
 # Signing material and local configuration
 *.pfx
+*.p12
 *.snk
+*.key
+*.pem
+*.cer
+*.crt
 .env
+.env.*
+!.env.example
+!.env.template
+secrets/
+secrets.*
+appsettings.Local.json
