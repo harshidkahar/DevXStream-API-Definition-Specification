@@ -9,7 +9,8 @@ $required = @(
   'DevXStream.DADS.Validation',
   'DevXStream.DADS.OpenApi',
   'DevXStream.DADS.Docs',
-  'DevXStream.DADS.AspNetCore'
+  'DevXStream.DADS.AspNetCore',
+  'DevXStream.DADS.Cli'
 )
 
 foreach ($packageId in $required) {
