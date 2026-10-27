@@ -47,6 +47,7 @@ jobs:
       - run: dotnet pack src/DevXStream.DADS.OpenApi -c Release --no-build --output artifacts/packages
       - run: dotnet pack src/DevXStream.DADS.Docs -c Release --no-build --output artifacts/packages
       - run: dotnet pack src/DevXStream.DADS.AspNetCore -c Release --no-build --output artifacts/packages
+      - run: dotnet pack src/DevXStream.DADS.Cli -c Release --no-build --output artifacts/packages
       - name: NuGet login with Trusted Publishing
         uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
         id: nuget-login
