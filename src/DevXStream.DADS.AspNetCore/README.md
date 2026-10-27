@@ -117,7 +117,7 @@ app.MapDadsOpenApi("/openapi.json");
 
 ## Requirements
 
-- .NET 10 and ASP.NET Core 10.
+- .NET 8 or .NET 9, with the matching ASP.NET Core shared framework.
 - A valid DADS 1.x JSON or YAML definition.
 
 ## Links

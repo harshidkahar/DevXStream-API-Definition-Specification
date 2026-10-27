@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>DevXStream.DADS.AspNetCore</PackageId>
-    <Version>1.0.19</Version>
+    <Version>1.0.20</Version>
     <Description>Single-package ASP.NET Core integration for DADS contracts, endpoint validation or mapping, OpenAPI export, and the native DevXStream API portal.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
