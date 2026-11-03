@@ -97,8 +97,11 @@ public static class DadsEndpointRouteBuilderExtensions
     public static IEndpointConventionBuilder MapDadsOpenApi(this IEndpointRouteBuilder endpoints, string pattern = "/openapi.json")
     {
         ArgumentNullException.ThrowIfNull(endpoints);
-        var definition = endpoints.ServiceProvider.GetRequiredService<DadsDefinition>();
-        return endpoints.MapGet(pattern, () => Results.Text(DadsDefinitionDocument.ExportOpenApi(definition).ToJsonString(), "application/json"));
+        var definition = endpoints.ServiceProvider.GetService<DadsDefinition>();
+        var resolution = definition is null ? endpoints.ServiceProvider.GetService<IDadsDefinitionResolver>()?.Resolve(endpoints) : new DadsDefinitionResolution(definition, DadsDefinitionSource.File, []);
+        return endpoints.MapGet(pattern, () => resolution?.Definition is null
+            ? Results.Problem("DADS definition is unavailable.", statusCode: StatusCodes.Status503ServiceUnavailable)
+            : Results.Text(DadsDefinitionDocument.ExportOpenApi(resolution.Definition).ToJsonString(), "application/json"));
     }
 
     private static void MapOperation(IEndpointRouteBuilder endpoints, ModuleDefinition module, OperationDefinition operation, Delegate handler) =>

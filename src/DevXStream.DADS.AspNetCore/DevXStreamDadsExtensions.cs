@@ -11,8 +11,14 @@ namespace DevXStream.DADS.AspNetCore;
 /// <summary>Configures a complete DADS API runtime and its native documentation UI.</summary>
 public sealed class DevXStreamDadsOptions
 {
-    /// <summary>Path to the DADS JSON or YAML definition.</summary>
+    /// <summary>Optional path to a curated DADS JSON or YAML definition.</summary>
     public string DefinitionPath { get; set; } = string.Empty;
+
+    /// <summary>Chooses the definition source. Auto first uses a registered provider, then a valid file, then runtime discovery.</summary>
+    public DadsDefinitionSource DefinitionSource { get; set; } = DadsDefinitionSource.Auto;
+
+    /// <summary>Allows runtime endpoint discovery when an optional custom provider or definition file is unavailable or invalid.</summary>
+    public bool EnableRuntimeFallback { get; set; } = true;
 
     /// <summary>Route where the native DADS UI is served.</summary>
     public string UiPath { get; set; } = "/dads";
@@ -39,6 +45,10 @@ public enum DadsEndpointMode
 /// <summary>Provides the one-call DADS ASP.NET Core integration.</summary>
 public static class DevXStreamDadsExtensions
 {
+    /// <summary>Registers DADS using runtime endpoint discovery and the default portal routes.</summary>
+    public static IServiceCollection AddDevXStreamDads(this IServiceCollection services) =>
+        services.AddDevXStreamDads(_ => { });
+
     /// <summary>Registers the DADS definition and discovers its operation handlers.</summary>
     public static IServiceCollection AddDevXStreamDads(this IServiceCollection services, Action<DevXStreamDadsOptions> configure)
     {
@@ -47,12 +57,12 @@ public static class DevXStreamDadsExtensions
 
         var options = new DevXStreamDadsOptions();
         configure(options);
-        ArgumentException.ThrowIfNullOrWhiteSpace(options.DefinitionPath);
         ValidateRoute(options.UiPath, nameof(options.UiPath));
         ValidateRoute(options.DefinitionEndpointPath, nameof(options.DefinitionEndpointPath));
 
         services.AddSingleton(options);
-        services.AddDadsDefinition(options.DefinitionPath);
+        services.AddSingleton<DadsDefinitionResolver>();
+        services.AddSingleton<IDadsDefinitionResolver>(provider => provider.GetRequiredService<DadsDefinitionResolver>());
         if (options.EndpointMode == DadsEndpointMode.AutoDiscoverHandlers)
         {
             var handlerAssembly = options.HandlerAssembly ?? Assembly.GetEntryAssembly()
@@ -67,13 +77,21 @@ public static class DevXStreamDadsExtensions
     {
         ArgumentNullException.ThrowIfNull(endpoints);
         var options = endpoints.ServiceProvider.GetRequiredService<DevXStreamDadsOptions>();
-        var definition = endpoints.ServiceProvider.GetRequiredService<DadsDefinition>();
+        var resolution = endpoints.ServiceProvider.GetRequiredService<DadsDefinitionResolver>().Resolve(endpoints);
 
-        if (options.EndpointMode == DadsEndpointMode.AutoDiscoverHandlers)
-            endpoints.MapDadsEndpoints();
-        else
-            endpoints.ValidateDadsEndpoints(definition);
-        endpoints.MapGet(options.DefinitionEndpointPath, () => Results.Json(definition, DadsJsonOptions));
+        if (resolution.Definition is not null && resolution.Source != DadsDefinitionSource.Runtime)
+        {
+            if (options.EndpointMode == DadsEndpointMode.AutoDiscoverHandlers) endpoints.MapDadsEndpoints(resolution.Definition, operation =>
+            {
+                var registrations = endpoints.ServiceProvider.GetServices<DadsHandlerRegistration>().ToDictionary(item => item.HandlerName, StringComparer.Ordinal);
+                var name = operation.Operation.Engineering?.Handler ?? operation.Operation.Name;
+                return registrations.TryGetValue(name, out var registration) ? (httpContext, context) => ((IDadsOperationHandler)httpContext.RequestServices.GetRequiredService(registration.HandlerType)).HandleAsync(httpContext, context) : null;
+            });
+            else endpoints.ValidateDadsEndpoints(resolution.Definition);
+        }
+        endpoints.MapGet(options.DefinitionEndpointPath, () => resolution.Definition is null
+            ? Results.Problem("DADS definition is unavailable.", statusCode: StatusCodes.Status503ServiceUnavailable, extensions: new Dictionary<string, object?> { ["diagnostics"] = resolution.Diagnostics.Select(d => new { d.RuleId, severity = d.Severity.ToString(), d.JsonPointer, d.Message }) })
+            : Results.Json(resolution.Definition, DadsJsonOptions));
         endpoints.MapGet(options.UiPath, () => Results.Content(DadsUi.GetHtml(options.UiPath), "text/html; charset=utf-8"));
         endpoints.MapGet($"{options.UiPath}/styles.css", () => Results.Content(DadsUi.Styles, "text/css; charset=utf-8"));
         endpoints.MapGet($"{options.UiPath}/branding.css", () => Results.Content(DadsUi.Branding, "text/css; charset=utf-8"));

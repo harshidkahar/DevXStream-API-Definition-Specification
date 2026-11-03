@@ -1,6 +1,6 @@
 # DevXStream.DADS.AspNetCore
 
-`DevXStream.DADS.AspNetCore` is the single-package integration for a DADS-defined ASP.NET Core API. It validates the DADS contract at startup, maps or verifies API endpoints, exports OpenAPI, and hosts the native DADS documentation and API-testing portal.
+`DevXStream.DADS.AspNetCore` is the single-package integration for DADS in ASP.NET Core. It can discover an existing application at runtime without a contract file, or load a curated DADS JSON or YAML definition when one is supplied. It hosts the native DADS portal and exports OpenAPI from the same validated definition.
 
 It brings in the DADS model, serialization, validation, and OpenAPI packages transitively. You do not need to add those packages separately.
 
@@ -12,22 +12,14 @@ dotnet add package DevXStream.DADS.AspNetCore
 
 ## Existing controllers or Minimal APIs
 
-Use this mode when the application already owns its routes. DADS verifies the declared operations against those routes and serves the portal at `/dads`.
+Use this mode when the application already owns its routes. No `api.dads.json` file is required. Map your existing endpoints before calling `MapDevXStreamDads`; DADS discovers them and serves the portal at `/dads`.
 
 ```csharp
 using DevXStream.DADS.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-
-builder.Services.AddDevXStreamDads(options =>
-{
-    options.DefinitionPath = Path.Combine(
-        builder.Environment.ContentRootPath,
-        "Definitions",
-        "api.dads.json");
-    options.EndpointMode = DadsEndpointMode.ExistingApplicationEndpoints;
-});
+builder.Services.AddDevXStreamDads();
 
 var app = builder.Build();
 app.MapControllers(); // Or map existing Minimal API routes first.
@@ -35,7 +27,33 @@ app.MapDevXStreamDads();
 app.Run();
 ```
 
-There is no per-operation handler map and no Swagger or Scalar dependency required.
+There is no per-operation handler map and no Swagger or Scalar dependency required. Runtime discovery uses the mapped route, HTTP method, endpoint name, tags or controller name, route parameters, and authorization metadata. Optional DADS metadata can be supplied with a custom definition provider when the baseline needs more engineering detail.
+
+## Curated file or custom provider
+
+`DefinitionPath` remains supported for teams that keep a reviewed DADS document. A valid file is preferred in the default `Auto` source mode. If an optional file is missing or invalid, the default runtime fallback keeps the application running and generates the portal from existing endpoints.
+
+```csharp
+builder.Services.AddDevXStreamDads(options =>
+{
+    options.DefinitionPath = Path.Combine(builder.Environment.ContentRootPath, "Definitions", "api.dads.json");
+    options.EndpointMode = DadsEndpointMode.ExistingApplicationEndpoints;
+    options.EnableRuntimeFallback = true; // default
+});
+```
+
+Use strict file behavior only when a curated contract is required. In strict mode DADS routes return an availability response if the file is unavailable; the rest of the application, including health endpoints, continues to run.
+
+```csharp
+builder.Services.AddDevXStreamDads(options =>
+{
+    options.DefinitionSource = DadsDefinitionSource.File;
+    options.DefinitionPath = "Definitions/api.dads.json";
+    options.EnableRuntimeFallback = false;
+});
+```
+
+For an application-owned definition, register `IDadsDefinitionProvider` and select `CustomProvider` or leave the default `Auto` source mode. Provider output is validated by the same DADS validator used by the portal and OpenAPI endpoint.
 
 ## DADS-first endpoints
 
@@ -117,8 +135,9 @@ app.MapDadsOpenApi("/openapi.json");
 
 ## Requirements
 
-- .NET 8 or .NET 9, with the matching ASP.NET Core shared framework.
-- A valid DADS 1.x JSON or YAML definition.
+- .NET 8, .NET 9, or .NET 10, with the matching ASP.NET Core shared framework.
+- No contract file is required for existing ASP.NET Core applications.
+- A valid DADS 1.x JSON or YAML definition is required only when file mode is selected.
 
 ## Links
 

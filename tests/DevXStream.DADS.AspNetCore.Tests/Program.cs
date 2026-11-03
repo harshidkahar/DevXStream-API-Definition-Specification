@@ -135,7 +135,33 @@ var existingPasses = ((IEndpointRouteBuilder)existingApp).DataSources.SelectMany
 File.Delete(existingDefinitionPath);
 
 Console.WriteLine($"{(existingPasses ? "PASS" : "FAIL")} supports existing Minimal API endpoints");
-return missingHandlerThrows && !invoked && conveniencePasses && automaticPasses && runtimePasses && existingPasses ? 0 : 1;
+
+var discoveredBuilder = WebApplication.CreateBuilder();
+discoveredBuilder.Services.AddDevXStreamDads();
+var discoveredApp = discoveredBuilder.Build();
+discoveredApp.MapGet("/catalog/{productId:int}", () => Results.Ok()).WithName("GetCatalogProduct").WithTags("Catalog");
+discoveredApp.MapDevXStreamDads();
+var discovered = discoveredApp.Services.GetRequiredService<IDadsDefinitionResolver>().Resolve(discoveredApp);
+var discoveryPasses = discovered.IsAvailable
+    && discovered.Source == DadsDefinitionSource.Runtime
+    && discovered.Definition!.Modules.Single(module => module.Name == "Catalog").Endpoints.Single().Route == "/catalog/{productId}"
+    && discovered.Definition.Modules.Single(module => module.Name == "Catalog").Endpoints.Single().Parameters!.Single().Required is true;
+Console.WriteLine($"{(discoveryPasses ? "PASS" : "FAIL")} discovers a runtime DADS definition without a file");
+
+var missingFileBuilder = WebApplication.CreateBuilder();
+missingFileBuilder.Services.AddDevXStreamDads(options =>
+{
+    options.DefinitionPath = Path.Combine(Path.GetTempPath(), $"missing-{Guid.NewGuid():N}.json");
+    options.EndpointMode = DadsEndpointMode.ExistingApplicationEndpoints;
+});
+var missingFileApp = missingFileBuilder.Build();
+missingFileApp.MapGet("/health/ready", () => Results.Ok());
+missingFileApp.MapDevXStreamDads();
+var fallback = missingFileApp.Services.GetRequiredService<IDadsDefinitionResolver>().Resolve(missingFileApp);
+var fallbackPasses = fallback.IsAvailable && fallback.Source == DadsDefinitionSource.Runtime && fallback.Diagnostics.Any(d => d.RuleId == "DADS004");
+Console.WriteLine($"{(fallbackPasses ? "PASS" : "FAIL")} falls back when an optional definition file is missing");
+
+return missingHandlerThrows && !invoked && conveniencePasses && automaticPasses && runtimePasses && existingPasses && discoveryPasses && fallbackPasses ? 0 : 1;
 
 static IResult GetProduct(string id) => Results.Ok(id);
 

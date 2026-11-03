@@ -2,7 +2,7 @@
 
 DADS is a versioned, language-neutral definition format for REST API contracts and the engineering metadata needed to generate, validate, and document production applications.
 
-The DADS packages support .NET 8 and .NET 9. ASP.NET Core applications should use the matching ASP.NET Core shared framework.
+The DADS packages support .NET 8, .NET 9, and .NET 10. ASP.NET Core applications should use the matching ASP.NET Core shared framework.
 
 ## Sprint 0 baseline
 
