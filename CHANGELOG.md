@@ -2,7 +2,7 @@
 
 All notable DADS changes are recorded here. DADS follows semantic versioning after the draft period.
 
-## 1.0.21 — 2026-11-03
+## 1.0.22 — 2026-11-03
 
 ### Added
 
