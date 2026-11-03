@@ -2,6 +2,7 @@ using DevXStream.DADS.AspNetCore;
 using DevXStream.DADS.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -135,7 +136,53 @@ var existingPasses = ((IEndpointRouteBuilder)existingApp).DataSources.SelectMany
 File.Delete(existingDefinitionPath);
 
 Console.WriteLine($"{(existingPasses ? "PASS" : "FAIL")} supports existing Minimal API endpoints");
-return missingHandlerThrows && !invoked && conveniencePasses && automaticPasses && runtimePasses && existingPasses ? 0 : 1;
+
+var discoveredBuilder = WebApplication.CreateBuilder();
+discoveredBuilder.Services.AddDevXStreamDads();
+var discoveredApp = discoveredBuilder.Build();
+discoveredApp.MapGet("/catalog/{productId:int}", () => Results.Ok()).WithName("GetCatalogProduct").WithTags("Catalog");
+discoveredApp.MapGet("/", () => Results.Redirect("/dads")).ExcludeFromDescription();
+discoveredApp.MapDevXStreamDads();
+var discovered = discoveredApp.Services.GetRequiredService<IDadsDefinitionResolver>().Resolve(discoveredApp);
+var discoveryPasses = discovered.IsAvailable
+    && discovered.Source == DadsDefinitionSource.Runtime
+    && discovered.Definition!.Modules.Single(module => module.Name == "Catalog").Endpoints.Single().Route == "/catalog/{productId}"
+    && discovered.Definition.Modules.Single(module => module.Name == "Catalog").Endpoints.Single().Parameters!.Single().Required is true
+    && !discovered.Definition.Modules.SelectMany(module => module.Endpoints).Any(operation => operation.Route == "/");
+Console.WriteLine($"{(discoveryPasses ? "PASS" : "FAIL")} discovers a runtime DADS definition without a file");
+
+var missingFileBuilder = WebApplication.CreateBuilder();
+missingFileBuilder.Services.AddDevXStreamDads(options =>
+{
+    options.DefinitionPath = Path.Combine(Path.GetTempPath(), $"missing-{Guid.NewGuid():N}.json");
+    options.EndpointMode = DadsEndpointMode.ExistingApplicationEndpoints;
+});
+var missingFileApp = missingFileBuilder.Build();
+missingFileApp.MapGet("/health/ready", () => Results.Ok());
+missingFileApp.MapDevXStreamDads();
+var fallback = missingFileApp.Services.GetRequiredService<IDadsDefinitionResolver>().Resolve(missingFileApp);
+var fallbackPasses = fallback.IsAvailable && fallback.Source == DadsDefinitionSource.Runtime && fallback.Diagnostics.Any(d => d.RuleId == "DADS004");
+Console.WriteLine($"{(fallbackPasses ? "PASS" : "FAIL")} falls back when an optional definition file is missing");
+
+var controllerBuilder = WebApplication.CreateBuilder();
+controllerBuilder.Services.AddControllers();
+controllerBuilder.Services.AddDevXStreamDads();
+var controllerApp = controllerBuilder.Build();
+controllerApp.MapControllers();
+controllerApp.MapDevXStreamDads();
+var controllerDefinition = controllerApp.Services.GetRequiredService<IDadsDefinitionResolver>().Resolve(controllerApp).Definition!;
+var createAddress = controllerDefinition.Modules.Single(module => module.Name == "Address").Endpoints.Single();
+var controllerParameters = createAddress.Parameters ?? [];
+var controllerPasses = createAddress.Name == "CreateAddress"
+    && createAddress.Summary == "CreateAddress"
+    && controllerParameters.Any(parameter => parameter is { Name: "tenantId", In: "query", Type: "integer" })
+    && controllerParameters.Any(parameter => parameter is { Name: "X-Tenant", In: "header" })
+    && createAddress.Request?.Schema == nameof(CreateAddressRequest)
+    && createAddress.Request.Example is not null
+    && controllerDefinition.Schemas.Single(schema => schema.Name == nameof(CreateAddressRequest)).Properties!.ContainsKey("label");
+Console.WriteLine($"{(controllerPasses ? "PASS" : "FAIL")} discovers controller request metadata and friendly names");
+
+return missingHandlerThrows && !invoked && conveniencePasses && automaticPasses && runtimePasses && existingPasses && discoveryPasses && fallbackPasses && controllerPasses ? 0 : 1;
 
 static IResult GetProduct(string id) => Results.Ok(id);
 
@@ -147,4 +194,19 @@ public sealed class AutoGetProductHandler : IDadsOperationHandler
 public sealed class AutoRuntimeHandler : IDadsOperationHandler
 {
     public Task<IResult> HandleAsync(HttpContext httpContext, DadsOperationContext operation) => Task.FromResult<IResult>(Results.Ok());
+}
+
+[ApiController]
+[Route("api/[controller]")]
+public sealed class AddressController : ControllerBase
+{
+    [HttpPost("CreateAddress")]
+    public IActionResult AddAddress([FromQuery] int tenantId, [FromHeader(Name = "X-Tenant")] string tenant, CreateAddressRequest request) => Ok();
+}
+
+public sealed class CreateAddressRequest
+{
+    public string Label { get; init; } = string.Empty;
+    public string Line1 { get; init; } = string.Empty;
+    public int PostalCode { get; init; }
 }
