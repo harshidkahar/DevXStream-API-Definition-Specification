@@ -5,7 +5,22 @@ body { background:#f6f7fe; }
 .brand { max-width:184px; margin:2px 4px 30px; }
 .brand img { display:block; width:100%; height:auto; }
 .sidebar #navigation{flex:1}.portal-attribution{display:grid;gap:6px;margin:28px 4px 2px;padding-top:16px;border-top:1px solid #e2e5f1;line-height:1.2}.portal-attribution strong{color:#52617d;font-size:11px}.portal-attribution a{width:max-content;color:#667590;font-size:11px;text-decoration:none}.portal-attribution a:hover,.portal-attribution a:focus-visible{color:#4f3eff;text-decoration:underline}
-.nav-module{border-bottom:1px solid #edf0f5}.nav-module summary{display:flex;align-items:center;gap:7px;cursor:pointer;list-style:none}.nav-module summary::-webkit-details-marker{display:none}.nav-module summary h2{flex:1}.nav-module summary::after{content:"›";color:#5b42ff;font-size:17px;line-height:1;transition:transform .18s ease}.nav-module[open] summary::after{transform:rotate(90deg)}.nav-count{min-width:20px;padding:1px 6px;border-radius:999px;background:#eeeaff;color:#4f3eff;font-size:10px;font-weight:800;text-align:center}.nav-module-links{padding:0 0 8px}.nav-module-links a{margin-left:2px}.nav-module summary:focus-visible{outline:3px solid #bcb3ff;outline-offset:2px;border-radius:6px}
+.nav-module{margin:0;border-bottom:1px solid #edf0f5}.nav-module summary{display:flex;align-items:center;gap:7px;padding:8px 0;cursor:pointer;list-style:none}.nav-module summary::-webkit-details-marker{display:none}.nav-module summary h2{flex:1;margin:0 8px}.nav-module summary::after{content:"›";color:#5b42ff;font-size:17px;line-height:1;transition:transform .18s ease}.nav-module[open] summary::after{transform:rotate(90deg)}.nav-count{min-width:20px;padding:1px 6px;border-radius:999px;background:#eeeaff;color:#4f3eff;font-size:10px;font-weight:800;text-align:center}.nav-module-links{padding:0 0 8px}.nav-module-links a{margin-left:2px}.nav-module summary:focus-visible{outline:3px solid #bcb3ff;outline-offset:2px;border-radius:6px}
+
+/* Compact module navigation and use the same visual language as operation badges. */
+#navigation .nav-module{margin:0!important}
+#navigation .nav-module summary{padding:3px 0!important}
+#navigation .nav-module summary h2{margin:0 8px!important}
+#navigation .nav-module-links{padding:0 0 3px}
+#navigation .nav-module-links a{padding:3px 8px}
+.nav-module-links .nav-method{display:inline-flex;align-items:center;justify-content:center;min-width:54px;padding:2px 6px;border-radius:6px;color:#fff;text-align:center}
+.nav-method.method-get{background:var(--get)}
+.nav-method.method-post{background:var(--post)}
+.nav-method.method-put{background:var(--put)}
+.nav-method.method-delete{background:var(--delete)}
+.nav-method.method-patch{background:#7c3aed}
+.nav-method.method-head,.nav-method.method-options{background:#64708a}
+.api-summary>.method{display:inline-flex;align-items:center;justify-content:center;min-width:66px;text-align:center}
 .topbar { min-height:92px; padding:18px 42px; background:#fff; }
 .topbar h1 { font-size:23px; letter-spacing:-.02em; }
 #document-content { max-width:1320px; width:100%; margin:0 auto; padding:40px 48px 96px; }
@@ -17,7 +32,7 @@ body { background:#f6f7fe; }
 .api-client > .operation-heading { min-height:48px; padding:0 2px; }
 .api-client > h2 { margin:4px 2px 4px; font-size:28px; letter-spacing:-.025em; }
 .api-client > .description { margin:0 2px 20px; font-size:15px; }
-.method { border-radius:6px; padding:5px 10px; }
+.method { border-radius:6px; padding:5px 10px; min-width:66px; text-align:center; }
 .route { font-size:20px; font-weight:750; }
 .security-chip { margin-left:4px; background:#eeeaff; border-color:#dcd4ff; color:#4c3fff; font-weight:700; }
 .endpoint-workspace { display:grid; grid-template-columns:minmax(430px,1fr) minmax(500px,1.12fr); align-items:stretch; gap:14px; margin:0; border:0; }
